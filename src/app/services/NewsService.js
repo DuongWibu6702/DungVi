@@ -3,7 +3,6 @@ const marked = require('marked');
 
 class NewsService {
 
-    // Lấy danh sách phân trang
     getPaginatedList(page, perPage) {
         return Promise.all([
             Newdb.find({})
@@ -15,7 +14,6 @@ class NewsService {
         ]);
     }
 
-    // Lấy bài viết theo slug
     getNewsBySlug(slug) {
         return Newdb.findOne({ slug }).then(news => {
             if (!news) return null;
@@ -24,13 +22,11 @@ class NewsService {
         });
     }
 
-    // API: danh sách JSON
     getAllNews() {
         return Newdb.find({})
             .sort({ createdAt: -1 });
     }
 
-    // API: chi tiết JSON
     getDetail(slug) {
         return Newdb.findOne({ slug });
     }

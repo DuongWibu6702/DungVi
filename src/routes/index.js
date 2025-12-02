@@ -9,10 +9,10 @@ const siteRouter = require('./site');
 function route(app) {
     app.use('/news', newsRouter)
     app.use('/comments', commentRouter)
+    app.use('/upload', uploadRoute)
     app.use('/admin', adminRouter)
     app.use('/author', authorRouter)
-    app.use('/upload', uploadRoute)
-    app.use('/', userRouter)
+    app.use('/user', userRouter)
     app.use('/', siteRouter)
 }
 

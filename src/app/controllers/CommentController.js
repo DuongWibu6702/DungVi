@@ -4,11 +4,6 @@ const mongoose = require('mongoose');
 
 class CommentController {
 
-    /*
-    |--------------------------------------------------------------------------
-    | TẠO COMMENT GỐC
-    |--------------------------------------------------------------------------
-    */
     async create(req, res) {
         try {
             const user = req.session.user;
@@ -41,11 +36,6 @@ class CommentController {
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | TẠO REPLY COMMENT
-    |--------------------------------------------------------------------------
-    */
     async reply(req, res) {
         try {
             const user = req.session.user;
@@ -80,15 +70,6 @@ class CommentController {
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | XOÁ COMMENT
-    |--------------------------------------------------------------------------
-    | - Member chỉ xoá comment của họ
-    | - Admin xoá mọi comment
-    | - Xoá cả reply của comment đó
-    |--------------------------------------------------------------------------
-    */
     async delete(req, res) {
         try {
             const user = req.session.user;

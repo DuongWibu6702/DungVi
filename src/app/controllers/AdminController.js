@@ -2,6 +2,7 @@ const AdminService = require('../services/AdminService');
 
 class AdminController {
 
+    // [GET]/admin/:slug/login
     loginForm(req, res) {
         const slug = req.params.slug;
 
@@ -12,6 +13,7 @@ class AdminController {
         });
     }
 
+    // [POST]/admin/:slug/login
     async login(req, res) {
         const slug = req.params.slug;
 
@@ -38,12 +40,14 @@ class AdminController {
         }
     }
 
+    // [GET]/admin/
     dashboard(req, res) {
         res.render('admin/dashboard', {
             user: req.session.user
         });
     }
 
+    // [GET]/admin/users
     async listUsers(req, res) {
         const page = parseInt(req.query.page) || 1;
         const limit = 10;
@@ -75,6 +79,7 @@ class AdminController {
         }
     }
 
+    // [POST]/admin/users/:id/role
     async updateRole(req, res) {
         try {
             await AdminService.updateUserRole(req.params.id, req.body.role);
@@ -84,6 +89,7 @@ class AdminController {
         }
     }
 
+    // [POST]/admin/logout
     logout(req, res) {
         req.session.user = null;
         res.redirect('/');

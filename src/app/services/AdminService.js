@@ -3,9 +3,6 @@ const User = require('../models/Users');
 
 class AdminService {
 
-    /* -------------------------------------------------------------
-       ADMIN LOGIN
-    ------------------------------------------------------------- */
     async login(email, password) {
         if (!email || !password) {
             throw new Error("Vui lòng nhập đầy đủ thông tin.");
@@ -20,9 +17,6 @@ class AdminService {
         return admin;
     }
 
-    /* -------------------------------------------------------------
-       SEARCH USERS WITH FILTER + PAGINATION
-    ------------------------------------------------------------- */
     async searchUsers(query, limit, skip) {
         let conditions = {};
 
@@ -47,9 +41,6 @@ class AdminService {
         return { users, total };
     }
 
-    /* -------------------------------------------------------------
-       UPDATE USER ROLE (không cho đổi thành admin)
-    ------------------------------------------------------------- */
     async updateUserRole(id, role) {
         const validRoles = ['author', 'member', 'viewer'];
 

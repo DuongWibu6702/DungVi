@@ -15,7 +15,6 @@ class AuthorService {
         return Newdb.findDeleted({});
     }
 
-    // Tạo bài viết mới
     async createNews(formData, file) {
         const newdb = new Newdb({
             name: formData.name,
@@ -32,7 +31,6 @@ class AuthorService {
         const uploadFolder = path.join(__dirname, '../../public/uploads', idFolder);
         fsExtra.ensureDirSync(uploadFolder);
 
-        // Thumbnail
         if (file) {
             const safeFilename = path.basename(file.filename);
             const thumbSrc = file.path;
@@ -42,7 +40,6 @@ class AuthorService {
             newdb.thumbnail = `/uploads/${idFolder}/${safeFilename}`;
         }
 
-        // Chuyển ảnh từ tmp sang folder bài viết
         if (formData.tmpFolder) {
             const safeTmp = path.basename(formData.tmpFolder);
             const tmpPath = path.join(__dirname, '../../public/uploads/tmp', safeTmp);
@@ -66,7 +63,6 @@ class AuthorService {
         return Newdb.findById(id);
     }
 
-    // Cập nhật bài viết
     async updateNews(id, formData, file) {
         const newdb = await Newdb.findById(id);
         if (!newdb) throw new Error("Not found");
@@ -75,13 +71,11 @@ class AuthorService {
         const uploadFolder = path.join(__dirname, '../../public/uploads', idFolder);
         fsExtra.ensureDirSync(uploadFolder);
 
-        // Thumbnail mới
         if (file) {
             const safeFilename = path.basename(file.filename);
             const thumbSrc = file.path;
             const thumbDest = path.join(uploadFolder, safeFilename);
 
-            // Xoá thumbnail cũ
             if (newdb.thumbnail) {
                 const oldThumb = path.join(__dirname, '../../public', newdb.thumbnail);
                 if (fsExtra.existsSync(oldThumb)) fsExtra.removeSync(oldThumb);
@@ -91,7 +85,6 @@ class AuthorService {
             newdb.thumbnail = `/uploads/${idFolder}/${safeFilename}`;
         }
 
-        // Chuyển ảnh tmp sang folder chính
         if (formData.tmpFolder) {
             const safeTmp = path.basename(formData.tmpFolder);
             const tmpPath = path.join(__dirname, '../../public/uploads/tmp', safeTmp);
@@ -108,13 +101,11 @@ class AuthorService {
             }
         }
 
-        // Cập nhật dữ liệu (chỉ update field có gửi lên)
         if (formData.name) newdb.name = formData.name;
         if (formData.description) newdb.description = formData.description;
         if (formData.body) newdb.body = formData.body;
         if (formData.author) newdb.author = formData.author;
 
-        // Source: nếu form gửi chuỗi rỗng → giữ nguyên
         if (typeof formData.source === "string") {
             newdb.source = formData.source.trim() !== "" 
                 ? formData.source 
@@ -124,7 +115,6 @@ class AuthorService {
         return newdb.save();
     }
 
-    // Clone bài viết
     async cloneNews(id) {
         const original = await Newdb.findById(id);
         if (!original) throw new Error("Không tìm thấy bài viết");
@@ -149,12 +139,10 @@ class AuthorService {
 
         fsExtra.ensureDirSync(newFolder);
 
-        // Sao chép toàn bộ thư mục ảnh
         if (fsExtra.existsSync(oldFolder)) {
             fsExtra.copySync(oldFolder, newFolder);
         }
 
-        // Cập nhật lại đường dẫn ảnh
         if (clone.thumbnail) {
             clone.thumbnail = clone.thumbnail.replace(oldId, newId);
         }
@@ -175,17 +163,14 @@ class AuthorService {
         return clone.save();
     }
 
-    // Xoá mềm
     softDelete(id) {
         return Newdb.delete({ _id: id });
     }
 
-    // Khôi phục
     restore(id) {
         return Newdb.restore({ _id: id });
     }
 
-    // Xoá vĩnh viễn
     forceDelete(id) {
         const folder = path.join(__dirname, '../../public/uploads', id.toString());
         if (fsExtra.existsSync(folder)) fsExtra.removeSync(folder);

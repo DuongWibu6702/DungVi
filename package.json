@@ -1,5 +1,5 @@
 {
-  "name": "tintuc24h",
+  "name": "dungvi",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DuongWibu6702/tintuc24h.git"
+    "url": "git+https://github.com/DuongWibu6702/DungVi"
   },
   "author": "duong6702",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/DuongWibu6702/tintuc24h/issues"
+    "url": "https://github.com/DuongWibu6702/DungVi/issues"
   },
-  "homepage": "https://github.com/DuongWibu6702/tintuc24h#readme",
+  "homepage": "https://github.com/DuongWibu6702/DungVi#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bootstrap": "^5.3.8",
