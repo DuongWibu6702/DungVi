@@ -1,0 +1,102 @@
+{{!-- =================== NAVBAR TRÊN CÙNG =================== --}}
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #343a40;">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+
+    <a class="navbar-brand fw-bold text-uppercase" href="/">Tin tức 24h</a>
+
+    {{#unless user}}
+      <a href="/login" class="btn btn-outline-light px-3">Đăng nhập</a>
+    {{/unless}}
+
+    {{#if user}}
+      <button class="btn btn-outline-light px-3"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#userOffcanvas">
+        {{user.name}}
+      </button>
+    {{/if}}
+
+  </div>
+</nav>
+
+
+{{!-- =================== NAVBAR MENU CHÍNH =================== --}}
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm py-2">
+  <div class="container d-flex align-items-center justify-content-between">
+
+    <a class="navbar-brand fw-bold fs-4 text-uppercase" href="/">24H</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav ms-auto d-flex align-items-center text-uppercase fw-semibold">
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="/news">Tin tức</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Bóng đá</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Kinh doanh</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Giải trí</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Sức khỏe</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Hi-Tech</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Thế giới</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Thể thao</a></li>
+        <li class="nav-item"><a class="nav-link px-3 fs-6" href="#">Ô tô</a></li>
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+
+
+{{!-- =================== OFFCANVAS TÀI KHOẢN =================== --}}
+{{#if user}}
+<div class="offcanvas offcanvas-end text-bg-dark"
+     tabindex="-1"
+     id="userOffcanvas"
+     aria-labelledby="userOffcanvasLabel">
+
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title fw-bold" id="userOffcanvasLabel">
+      {{user.name}}
+      <span class="badge bg-secondary ms-2 text-uppercase">{{user.role}}</span>
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body d-flex flex-column gap-3">
+
+
+    {{!-- =================== ADMINISTRATOR =================== --}}
+    {{#if (eq user.role "admin")}}
+      <a href="/admin/users" class="btn btn-outline-light w-100 text-start">Quản lý người dùng</a>
+      <a href="/author/posts/add-new" class="btn btn-outline-light w-100 text-start">Đăng bài</a>
+      <a href="/author/stored/news" class="btn btn-outline-light w-100 text-start">Bài viết của tôi</a>
+      <hr class="border-secondary">
+    {{/if}}
+
+
+    {{!-- =================== AUTHOR =================== --}}
+    {{#if (eq user.role "author")}}
+      <a href="/author/posts/add-new" class="btn btn-outline-light w-100 text-start">Đăng bài</a>
+      <a href="/author/stored/news" class="btn btn-outline-light w-100 text-start">Bài viết của tôi</a>
+      <hr class="border-secondary">
+    {{/if}}
+
+
+    {{!-- =================== MEMBER =================== --}}
+    {{#if (eq user.role "member")}}
+      <hr class="border-secondary">
+    {{/if}}
+
+
+    {{!-- =================== LOGOUT (tất cả role) =================== --}}
+    <a href="/logout" class="btn btn-danger w-100 text-start mt-2">
+      Đăng xuất
+    </a>
+
+  </div>
+
+</div>
+{{/if}}

@@ -1,0 +1,63 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+
+      <article class="newdb-article">
+        <h1 class="fw-bold mb-3 text-dark">{{newdb.name}}</h1>
+
+        <p class="text-muted mb-4">
+          <small>
+            {{#if newdb.author}}Tác giả: {{newdb.author}}{{/if}}
+            {{#if newdb.source}} | Nguồn: {{newdb.source}}{{/if}}
+          </small>
+        </p>
+
+        <p class="lead text-dark">{{newdb.description}}</p>
+
+        <div class="article-body mt-4">
+          {{{newdb.body}}}
+        </div>
+      </article>
+
+      <hr class="my-4">
+
+      <div id="comments">
+
+        <h4 class="fw-bold mb-3">Bình luận ({{commentsTree.length}})</h4>
+
+        {{#if user}}
+        <form action="/comments/{{newdb._id}}" method="POST" class="mb-4">
+          <textarea name="content" class="form-control" rows="3" required placeholder="Viết bình luận..."></textarea>
+          <button class="btn btn-primary mt-2">Gửi bình luận</button>
+        </form>
+        {{else}}
+        <div class="alert alert-info">
+          <a href="/login">Đăng nhập</a> để bình luận.
+        </div>
+        {{/if}}
+
+        <!-- BOX LỚN CHỨA TOÀN BỘ COMMENT -->
+        <div class="comment-list mt-4 p-3 border rounded bg-light">
+
+          {{#each commentsTree}}
+            {{> commentItem this}}
+          {{/each}}
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".reply-btn").forEach(btn => {
+    btn.addEventListener("click", function () {
+      const id = this.getAttribute("data-id");
+      const form = document.getElementById("reply-box-" + id);
+      form.classList.toggle("d-none");
+    });
+  });
+});
+</script>

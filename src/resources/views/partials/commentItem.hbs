@@ -1,0 +1,74 @@
+<div class="comment-item py-2">
+
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <strong>{{userName}}</strong>
+      <span class="text-muted small"> • {{timeAgo createdAt}}</span>
+      <p class="mt-1 mb-1">{{content}}</p>
+    </div>
+    
+    {{#if (or 
+        (eq @root.user.role "admin") 
+        (eq (toString @root.user._id) (toString userId))
+      )}}
+
+      <button class="btn btn-sm btn-outline-danger"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteComment-{{_id}}">
+        Xóa
+      </button>
+    {{/if}}
+  </div>
+
+  {{#if @root.user}}
+    <div class="d-flex justify-content-start">
+        <button class="reply-btn btn btn-primary btn-sm rounded-pill px-3 py-1 mt-1 text-white"
+                data-id="{{_id}}"
+                style="font-size:13px;">
+            <i class="bi bi-reply-fill"></i> Trả lời
+        </button>
+    </div>
+
+    <div id="reply-box-{{_id}}" class="reply-form d-none mt-2">
+      <form action="/comments/reply/{{@root.newdb._id}}/{{_id}}" method="POST">
+        <textarea name="content"
+                  class="form-control"
+                  rows="2"
+                  placeholder="Nhập phản hồi..."
+                  required></textarea>
+        <button class="btn btn-sm btn-primary mt-2">Gửi phản hồi</button>
+      </form>
+    </div>
+  {{/if}}
+
+  {{#if replies}}
+    <div class="ms-4 mt-2 ps-3 border-start border-2">
+      {{#each replies}}
+        {{> commentItem this}}
+      {{/each}}
+    </div>
+  {{/if}}
+
+</div>
+
+<!-- Modal Delete -->
+<div class="modal fade" id="deleteComment-{{_id}}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xóa bình luận</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">Bạn chắc chắn muốn xóa bình luận này?</div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+
+        <form action="/comments/{{_id}}?_method=DELETE" method="POST">
+          <button class="btn btn-danger">Xóa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="container mt-4">
+  <h2>Tạo bài viết mới</h2>
+
+  <form id="createPostForm"
+        action="/author/posts/store"
+        method="POST"
+        enctype="multipart/form-data"
+        novalidate>
+
+    <!-- KHUNG HIỂN THỊ LỖI -->
+    <div id="formErrors" class="alert alert-danger d-none"></div>
+
+    <!-- Tên bài viết -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên bài viết</label>
+      <input type="text" name="name" id="name" class="form-control">
+    </div>
+
+    <!-- Mô tả ngắn -->
+    <div class="mb-3">
+      <label for="description" class="form-label">Mô tả ngắn</label>
+      <textarea name="description" id="description" class="form-control" rows="2"></textarea>
+    </div>
+
+    <!-- Tác giả -->
+    <div class="mb-3">
+      <label for="author" class="form-label">Tác giả</label>
+      <input type="text" name="author" id="author" class="form-control">
+    </div>
+
+    <!-- Nguồn -->
+    <div class="mb-3">
+      <label for="source" class="form-label">Nguồn (URL)</label>
+      <input type="text" name="source" id="source" class="form-control">
+    </div>
+
+    <!-- Thumbnail -->
+    <div class="mb-3">
+      <label for="thumbnail" class="form-label">Thumbnail</label>
+      <input type="file" name="thumbnail" id="thumbnail" class="form-control">
+      <div id="thumbnailPreview" class="mt-2"></div>
+    </div>
+
+    <!-- Nội dung Markdown -->
+    <div class="mb-3">
+      <label for="body" class="form-label">Nội dung</label>
+      <textarea name="body" id="body" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Đăng bài</button>
+  </form>
+</div>
+
+<!-- EasyMDE -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<script src="https://unpkg.com/easymde/dist/easymde.min.js" defer></script>
+
+<script src="/js/user/author/posts/add-new.js" defer></script>

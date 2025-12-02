@@ -25,6 +25,7 @@ db.connect();
 
 // STATIC FILES
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // HTTP LOGGER
 app.use(morgan('combined'));
@@ -37,11 +38,7 @@ app.use(express.json());
 app.use(methodOverride('_method'));
 
 // SECURITY MIDDLEWARES
-
-// Bảo vệ Header
 app.use(helmet());
-
-// CSP cho phép CDN Bootstrap
 app.use(helmet.contentSecurityPolicy({
     useDefaults: true,
     directives: {
@@ -78,14 +75,8 @@ app.use(helmet.contentSecurityPolicy({
         ],
     }
 }));
-
-// Chống XSS từ input
 app.use(sanitize);
-
-// Chống NoSQL injection
 app.use(nosqlSanitize);
-
-// Rate limit 100 req / 10 phút
 app.use(rateLimit({
     windowMs: 10 * 60 * 1000,
     max: 100,
@@ -97,7 +88,7 @@ app.use(rateLimit({
 app.set('trust proxy', 1);
 
 app.use(session({
-    secret: 'dungvi-secret-key',
+    secret: 'tintuc24h-secret-key',
     resave: false,
     saveUninitialized: false,
     cookie: {

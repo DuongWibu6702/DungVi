@@ -1,0 +1,64 @@
+<div class="container mt-4">
+  <h2>Chỉnh sửa bài viết</h2>
+
+  <form id="editPostForm"
+        action="/author/posts/{{newdb._id}}?_method=PUT"
+        method="POST"
+        enctype="multipart/form-data"
+        novalidate>
+
+    <!-- hiển thị lỗi -->
+    <div id="formErrors" class="alert alert-danger d-none"></div>
+
+    <!-- Tiêu đề -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Tiêu đề</label>
+      <input type="text" name="name" id="name" class="form-control" value="{{newdb.name}}">
+    </div>
+
+    <!-- Mô tả -->
+    <div class="mb-3">
+      <label for="description" class="form-label">Mô tả ngắn</label>
+      <textarea name="description" id="description" class="form-control" rows="2">{{newdb.description}}</textarea>
+    </div>
+
+    <!-- Tác giả -->
+    <div class="mb-3">
+      <label for="author" class="form-label">Tác giả</label>
+      <input type="text" name="author" id="author" class="form-control" value="{{newdb.author}}">
+    </div>
+
+    <!-- Nguồn -->
+    <div class="mb-3">
+      <label for="source" class="form-label">Nguồn (URL)</label>
+      <input type="text" name="source" id="source" class="form-control" value="{{newdb.source}}">
+    </div>
+
+    <!-- Thumbnail -->
+    <div class="mb-3">
+      <label class="form-label">Thumbnail</label>
+      <input type="file" id="thumbnail" name="thumbnail" class="form-control">
+
+      <div id="thumbnailPreview" class="mt-2">
+        {{#if newdb.thumbnail}}
+          <img src="{{newdb.thumbnail}}" alt="Thumbnail" style="height:80px;">
+        {{/if}}
+      </div>
+    </div>
+
+    <!-- Nội dung -->
+    <div class="mb-3">
+      <label for="body" class="form-label">Nội dung</label>
+      <textarea id="body" name="body" class="form-control">{{newdb.body}}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Cập nhật</button>
+  </form>
+</div>
+
+<!-- CSS + JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js" defer></script>
+
+<script src="/js/user/author/posts/edit.js" defer></script>
