@@ -3,7 +3,7 @@ const commentRouter = require('./comment');
 const uploadRoute = require('./upload');
 const adminRouter = require('./admin');
 const authorRouter = require('./author');
-const userRouter = require('./user');
+const memberRouter = require('./member');
 const siteRouter = require('./site');
 
 function route(app) {
@@ -12,7 +12,7 @@ function route(app) {
     app.use('/upload', uploadRoute)
     app.use('/admin', adminRouter)
     app.use('/author', authorRouter)
-    app.use('/user', userRouter)
+    app.use('/member', memberRouter)
     app.use('/', siteRouter)
 }
 

@@ -5,7 +5,15 @@ class SiteController {
 
     // [GET] /
     index(req, res, next) {
-        res.render('user/home')
+        res.render('home')
+    }
+
+    // [GET] /member/logout
+    logout(req, res) {
+        req.session.destroy(() => {
+            res.clearCookie('connect.sid');
+            res.redirect('/');
+        });
     }
     
 }

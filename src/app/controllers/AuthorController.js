@@ -1,13 +1,197 @@
 const { mongooseToObject, multipleMongooseToObject } = require('../../util/mongoose');
 const AuthorService = require('../services/AuthorService');
 
+// CHECK SLUG HỢP LỆ
+function validateSlug(slug) {
+    return slug === process.env.AUHTOR_LOGIN_SLUG;
+}
+
 class AuthorController {
+
+    // [GET] /author/:slug/register
+    registerForm(req, res) {
+        const slug = req.params.slug;
+
+        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+
+        res.render('author/register', {
+            slug,
+            registerAction: `/author/${slug}/register`,
+            error: null
+        });
+    }
+
+    // [POST] /author/:slug/register
+    async register(req, res) {
+        const slug = req.params.slug;
+
+        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+
+        try {
+            const { name, email, password, confirm } = req.body;
+
+            if (!name || !email || !password || !confirm) {
+                return res.render('author/register', {
+                    slug,
+                    registerAction: `/author/${slug}/register`,
+                    error: "Vui lòng nhập đầy đủ thông tin."
+                });
+            }
+
+            if (password !== confirm) {
+                return res.render('author/register', {
+                    slug,
+                    registerAction: `/author/${slug}/register`,
+                    error: "Mật khẩu nhập lại không đúng."
+                });
+            }
+
+            await AuthorService.registerAuthor(name.trim(), email.trim(), password.trim());
+
+            res.render('author/login', {
+                slug,
+                loginAction: `/author/${slug}/login`,
+                error: null
+            });
+            
+        } catch (err) {
+            res.render('author/register', {
+                slug,
+                registerAction: `/author/${slug}/register`,
+                error: err.message
+            });
+        }
+    }
+
+    // [GET] /author/:slug/login
+    loginForm(req, res) {
+        const slug = req.params.slug;
+
+        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+
+        res.render('author/login', {
+            slug,
+            loginAction: `/author/${slug}/login`,
+            error: null
+        });
+    }
+
+    // [POST] /author/:slug/login
+    async login(req, res) {
+        const slug = req.params.slug;
+
+        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+
+        try {
+            const { email, password } = req.body;
+
+            const author = await AuthorService.loginAuthor(email, password);
+
+            req.session.user = {
+                _id: author._id.toString(),
+                name: author.name,
+                email: author.email,
+                type: "Author"
+            };
+
+            res.redirect('/author/stored/news');
+
+        } catch (err) {
+            res.render('author/login', {
+                slug,
+                loginAction: `/author/${slug}/login`,
+                error: err.message
+            });
+        }
+    }
+
+    // [POST] /author/logout
+    logout(req, res) {
+        req.session.destroy(() => {
+            res.clearCookie('connect.sid');
+            res.redirect('/');
+        });
+    }
+
+    // [GET] /author/profile
+    profileForm(req, res) {
+        res.render('author/profile', {
+            user: req.session.user,
+            error: null,
+            success: null
+        });
+    }
+
+    // [POST] /author/profile
+    async updateProfile(req, res) {
+        try {
+            const { name, email, verifyPassword } = req.body;
+
+            const updatedUser = await AuthorService.updateProfile(
+                req.session.user._id,
+                name,
+                email,
+                verifyPassword
+            );
+
+            req.session.user.name = updatedUser.name;
+
+            res.render('author/profile', {
+                user: updatedUser,
+                success: "Cập nhật hồ sơ thành công.",
+                error: null
+            });
+
+        } catch (err) {
+            const user = await AuthorService.getById(req.session.user._id);
+
+            res.render('author/profile', {
+                user,
+                error: err.message,
+                success: null
+            });
+        }
+    }
+
+    // [GET] /author/password
+    passwordForm(req, res) {
+        res.render('author/password', {
+            user: req.session.user,
+            error: null,
+            success: null
+        });
+    }
+
+    // [POST] /author/password
+    async updatePassword(req, res) {
+        try {
+            const { oldPassword, newPassword, confirmPassword } = req.body;
+
+            const result = await AuthorService.updatePassword(
+                req.session.user._id,
+                oldPassword,
+                newPassword,
+                confirmPassword
+            );
+
+            res.render('author/password', {
+                success: result.message,
+                error: null
+            });
+
+        } catch (err) {
+            res.render('author/password', {
+                error: err.message,
+                success: null
+            });
+        }
+    }
 
     // [GET] /author/stored/news
     stored(req, res, next) {
         AuthorService.getStoredNews()
             .then(([newdb, deletedCount]) => {
-                res.render('user/author/storedNews', {
+                res.render('author/storedNews', {
                     newdb: multipleMongooseToObject(newdb),
                     deletedCount
                 });
@@ -19,7 +203,7 @@ class AuthorController {
     trash(req, res, next) {
         AuthorService.getTrashNews()
             .then(newdb => {
-                res.render('user/author/trashNews', {
+                res.render('author/trashNews', {
                     newdb: multipleMongooseToObject(newdb)
                 });
             })
@@ -28,7 +212,7 @@ class AuthorController {
 
     // [GET] /author/posts/add-new
     createForm(req, res) {
-        res.render('user/author/posts/add-new');
+        res.render('author/posts/add-new');
     }
 
     // [POST] /author/posts/store
@@ -52,7 +236,7 @@ class AuthorController {
         AuthorService.getNewsById(req.params.id)
             .then(newdb => {
                 if (!newdb) return res.status(404).send("Không tìm thấy bài viết");
-                res.render('user/author/posts/edit', {
+                res.render('author/posts/edit', {
                     newdb: mongooseToObject(newdb)
                 });
             })
@@ -75,13 +259,6 @@ class AuthorController {
             .catch(next);
     }
 
-    // [POST] /author/posts/clone/:id
-    clone(req, res, next) {
-        AuthorService.cloneNews(req.params.id)
-            .then(() => res.redirect('/author/stored/news'))
-            .catch(next);
-    }
-
     // [DELETE] /author/posts/:id
     destroy(req, res, next) {
         AuthorService.softDelete(req.params.id)
@@ -100,6 +277,13 @@ class AuthorController {
     restore(req, res, next) {
         AuthorService.restore(req.params.id)
             .then(() => res.redirect('/author/trash/news'))
+            .catch(next);
+    }
+
+    // [POST] /author/posts/clone/:id
+    clone(req, res, next) {
+        AuthorService.cloneNews(req.params.id)
+            .then(() => res.redirect('/author/stored/news'))
             .catch(next);
     }
 }

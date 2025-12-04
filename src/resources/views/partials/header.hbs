@@ -15,19 +15,17 @@
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-uppercase fw-semibold">
 
         <li class="nav-item">
-          <a class="nav-link px-3" href="/">Trang chủ</a>
-        </li>
-
-        <li class="nav-item">
           <a class="nav-link px-3" href="/news">Tin tức</a>
         </li>
 
+        {{!-- Khi chưa đăng nhập --}}
         {{#unless user}}
           <li class="nav-item">
-            <a class="nav-link px-3" href="/user/login">Đăng nhập</a>
+            <a class="nav-link px-3" href="/member/login">Đăng nhập</a>
           </li>
         {{/unless}}
 
+        {{!-- Khi đã đăng nhập --}}
         {{#if user}}
           <li class="nav-item">
             <button class="btn btn-outline-dark ms-2"
@@ -44,6 +42,8 @@
   </div>
 </nav>
 
+
+{{!-- OFFCANVAS --}}
 {{#if user}}
 <div class="offcanvas offcanvas-end text-bg-dark"
      tabindex="-1"
@@ -52,13 +52,33 @@
   <div class="offcanvas-header border-bottom">
     <h5 class="offcanvas-title">
       {{user.name}}
-      <span class="badge bg-secondary text-uppercase ms-2">{{user.role}}</span>
+      <span class="badge bg-secondary text-uppercase ms-2">{{user.type}}</span>
     </h5>
     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
   </div>
 
   <div class="offcanvas-body d-flex flex-column gap-2">
-    <a href="/logout" class="btn btn-danger w-100 mt-2">Đăng xuất</a>
+
+    {{!-- MEMBER --}}
+    {{#if (eq user.type "Member")}}
+      <a href="/member/profile" class="btn btn-danger w-100">Thông tin người dùng</a>
+    {{/if}}
+
+    {{!-- AUTHOR --}}
+    {{#if (eq user.type "Author")}}
+      <a href="/member/profile" class="btn btn-danger w-100">Thông tin người dùng</a>
+      <a href="/author/stored/news" class="btn btn-warning w-100">Quản lý bài viết</a>
+    {{/if}}
+
+    {{!-- ADMIN --}}
+    {{#if (eq user.type "Admin")}}
+      <a href="/member/profile" class="btn btn-danger w-100">Thông tin người dùng</a>
+      <a href="/author/stored/news" class="btn btn-warning w-100">Quản lý bài viết</a>
+      <a href="/admin/users" class="btn btn-primary w-100">Quản lý người dùng</a>
+    {{/if}}
+
+    <a href="/logout" class="btn btn-light w-100 mt-3">Đăng xuất</a>
+
   </div>
 
 </div>

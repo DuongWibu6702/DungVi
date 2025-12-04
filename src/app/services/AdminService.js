@@ -1,14 +1,20 @@
-const Admin = require('../models/Admin');
+const bcrypt = require('bcryptjs');
 const User = require('../models/Users');
+const Admin = require('../models/Admins');
+
+function normalizeEmail(email = '') {
+    return String(email).trim().toLowerCase();
+}
 
 class AdminService {
-
     async login(email, password) {
         if (!email || !password) {
             throw new Error("Vui lòng nhập đầy đủ thông tin.");
         }
 
-        const admin = await Admin.findOne({ email });
+        const normEmail = normalizeEmail(email);
+
+        const admin = await Admin.findOne({ email: normEmail });
         if (!admin) throw new Error("Email không tồn tại.");
 
         const match = await admin.comparePassword(password);
@@ -29,36 +35,45 @@ class AdminService {
             ];
         }
 
-        if (query.role) {
-            conditions.role = query.role;
+        if (query.type) {
+            conditions.type = query.type; 
         }
 
         const [users, total] = await Promise.all([
-            User.find(conditions).limit(limit).skip(skip).lean(),
+            User.find(conditions)
+                .sort({ createdAt: -1 })
+                .limit(limit)
+                .skip(skip)
+                .lean(),
             User.countDocuments(conditions)
         ]);
 
         return { users, total };
     }
 
-    async updateUserRole(id, role) {
-        const validRoles = ['author', 'member', 'viewer'];
+    async toggleActive(id) {
+        const user = await User.findById(id);
+        if (!user) throw new Error("Không tìm thấy user.");
 
-        if (!validRoles.includes(role)) {
-            throw new Error("Vai trò không hợp lệ.");
+        if (user.type !== "Author") {
+            throw new Error("Chỉ tác giả mới có trạng thái active.");
         }
 
-        const user = await User.findByIdAndUpdate(
-            id,
-            { role },
-            { new: true }
-        ).lean();
-
-        if (!user) {
-            throw new Error("User không tồn tại.");
-        }
+        user.active = !user.active;
+        await user.save();
 
         return user;
+    }
+
+    async deleteUser(id) {
+        const user = await User.findById(id);
+        if (!user) throw new Error("Không tìm thấy user.");
+
+        if (user.type === "Admin") {
+            throw new Error("Không thể xóa tài khoản Admin.");
+        }
+
+        return User.findByIdAndDelete(id);
     }
 }
 

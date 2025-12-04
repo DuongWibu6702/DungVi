@@ -1,4 +1,4 @@
-const Comment = require('../models/Comment');
+const Comment = require('../models/Comments');
 const mongoose = require('mongoose');
 
 class CommentService {

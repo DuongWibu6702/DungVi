@@ -7,7 +7,7 @@
 
         <div class="col-md-4">
             <input type="text" name="q"
-                placeholder="Tìm theo tên, email, số điện thoại..."
+                placeholder="Tìm theo tên, email..."
                 class="form-control"
                 value="{{query.q}}">
         </div>
@@ -15,7 +15,7 @@
         <div class="col-md-3">
             <select name="role" class="form-select">
                 <option value="">Tất cả vai trò</option>
-                <option value="admin" {{#if (eq query.role "admin")}}selected{{/if}}>Admin</option>
+                <option value="admin"  {{#if (eq query.role "admin")}}selected{{/if}}>Admin</option>
                 <option value="author" {{#if (eq query.role "author")}}selected{{/if}}>Author</option>
                 <option value="member" {{#if (eq query.role "member")}}selected{{/if}}>Member</option>
             </select>
@@ -38,70 +38,76 @@
                 <th>#</th>
                 <th>Họ tên</th>
                 <th>Email</th>
-                <th>SĐT</th>
                 <th>Vai trò</th>
-                <th style="width: 200px;">Hành động</th>
+                <th style="width: 220px;">Hành động</th>
             </tr>
         </thead>
 
         <tbody>
-            {{#each users}}
+        {{#each users}}
             <tr>
                 <td class="text-center">{{inc @index}}</td>
 
                 <td>{{this.name}}</td>
                 <td>{{this.email}}</td>
-                <td>{{this.phone}}</td>
 
                 <td class="text-center">
+
                     <span class="badge text-bg-primary text-uppercase px-3 py-2">
-                        {{this.role}}
+                        {{this.type}}
                     </span>
+
+                    {{#if (eq this.type "Author")}}
+                        {{#if this.active}}
+                            <span class="badge bg-success ms-2 px-3 py-2">ACTIVE</span>
+                        {{else}}
+                            <span class="badge bg-danger ms-2 px-3 py-2">INACTIVE</span>
+                        {{/if}}
+                    {{/if}}
+
                 </td>
 
                 <td class="text-center">
-                    <button class="btn btn-sm btn-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#roleModal-{{this._id}}">
-                        Đổi vai trò
-                    </button>
+
+                    {{!-- Nút Active / Inactive cho Author --}}
+                    {{#if (eq this.type "Author")}}
+
+                        <form method="POST"
+                            action="/admin/users/{{this._id}}/toggle-active?_method=PATCH"
+                            class="d-inline">
+
+                            {{#if this.active}}
+                                <button class="btn btn-warning btn-sm">
+                                    Deactive
+                                </button>
+                            {{else}}
+                                <button class="btn btn-success btn-sm">
+                                    Active
+                                </button>
+                            {{/if}}
+
+                        </form>
+
+                    {{/if}}
+
+                    {{!-- Nút Xóa (trừ Admin) --}}
+                    {{#unless (eq this.type "Admin")}}
+                        <form method="POST"
+                            action="/admin/users/{{this._id}}/delete?_method=DELETE"
+                            class="d-inline"
+                            onsubmit="return confirm('Bạn chắc muốn xóa người dùng này?');">
+
+                            <button class="btn btn-danger btn-sm ms-1">
+                                Xóa
+                            </button>
+                        </form>
+                    {{/unless}}
+
                 </td>
             </tr>
-            {{/each}}
+        {{/each}}
         </tbody>
     </table>
-
-
-    <!-- RENDER TOÀN BỘ MODAL RA NGOÀI TABLE -->
-    {{#each users}}
-    <div class="modal fade" id="roleModal-{{this._id}}" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <form method="POST" action="/admin/users/{{this._id}}/role" class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Đổi vai trò: {{this.name}}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <label class="fw-bold mb-2">Chọn vai trò mới:</label>
-                    <select name="role" class="form-select">
-                        <option value="admin" {{#if (eq this.role "admin")}}selected{{/if}}>Admin</option>
-                        <option value="author" {{#if (eq this.role "author")}}selected{{/if}}>Author</option>
-                        <option value="member" {{#if (eq this.role "member")}}selected{{/if}}>Member</option>
-                    </select>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                </div>
-
-            </form>
-        </div>
-    </div>
-    {{/each}}
-
 
     <!-- PHÂN TRANG -->
     {{#if pagination.totalPages}}

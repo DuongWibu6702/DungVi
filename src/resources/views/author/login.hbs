@@ -1,22 +1,22 @@
 <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
   <div class="card shadow-sm p-4" style="width: 380px; border-radius: 12px;">
     
-    <h3 class="text-center fw-bold mb-3">Đăng nhập</h3>
+    <h3 class="text-center fw-bold mb-3">Đăng nhập tác giả</h3>
 
     {{#if error}}
       <div class="alert alert-danger py-2">{{error}}</div>
     {{/if}}
 
-    <form method="POST" action="/uesr/login" class="d-flex flex-column gap-3">
+    <form method="POST" action="{{loginAction}}" class="d-flex flex-column gap-3">
 
       <div>
-        <label for="account" class="form-label fw-semibold">Email hoặc số điện thoại</label>
+        <label for="email" class="form-label fw-semibold">Email</label>
         <input 
-          type="text" 
+          type="email" 
           class="form-control" 
-          name="account" 
-          id="account"
-          placeholder="Nhập email hoặc số điện thoại"
+          name="email" 
+          id="email"
+          placeholder="Nhập email"
           required
         >
       </div>
@@ -38,8 +38,8 @@
       </button>
 
       <div class="text-center mt-2">
-        Bạn chưa có tài khoản?
-        <a href="/user/register" class="fw-semibold">Tạo tài khoản</a>
+        Bạn chưa có tài khoản tác giả?
+        <a href="/author/{{slug}}/register" class="fw-semibold">Đăng ký ngay</a>
       </div>
 
     </form>

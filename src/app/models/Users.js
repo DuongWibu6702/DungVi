@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-// Làm sạch tên người dùng
 function capitalizeName(name) {
     return name
         .toLowerCase()
@@ -19,7 +18,11 @@ const UserSchema = new mongoose.Schema(
             required: true,
             trim: true,
             minlength: 2,
-            maxlength: 100
+            maxlength: 100,
+            validate: {
+                validator: v => v.trim().length >= 2,
+                message: 'Tên quá ngắn'
+            }
         },
 
         email: {
@@ -29,20 +32,8 @@ const UserSchema = new mongoose.Schema(
             lowercase: true,
             trim: true,
             validate: {
-                validator: (v) => /^\S+@\S+\.\S+$/.test(v),
+                validator: v => /^\S+@\S+\.\S+$/.test(v),
                 message: 'Email không hợp lệ'
-            }
-        },
-
-        phone: {
-            type: String,
-            required: true,
-            unique: true,
-            trim: true,
-            validate: {
-                validator: (v) =>
-                    /^(\+84|0)(3|5|7|8|9)\d{8}$/.test(v.replace(/[\s\-().]/g, '')),
-                message: 'Số điện thoại không hợp lệ (VN)'
             }
         },
 
@@ -50,18 +41,15 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true,
             minlength: 6
-        },
-
-        role: {
-            type: String,
-            enum: ['member'],
-            default: 'member'
         }
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+        discriminatorKey: 'type',
+        collection: 'users'
+    }
 );
 
-// Format tên trước khi lưu
 UserSchema.pre('save', function (next) {
     if (this.isModified('name')) {
         this.name = capitalizeName(this.name);
@@ -69,12 +57,8 @@ UserSchema.pre('save', function (next) {
     next();
 });
 
-// Hash password
 UserSchema.pre('save', async function (next) {
-    // Nếu mật khẩu không đổi → bỏ qua
-    if (!this.isModified('password')) {
-        return next();
-    }
+    if (!this.isModified('password')) return next();
 
     try {
         const salt = await bcrypt.genSalt(10);
@@ -85,7 +69,6 @@ UserSchema.pre('save', async function (next) {
     }
 });
 
-// So sánh mật khẩu
 UserSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
 };

@@ -1,8 +1,10 @@
+// controllers/AdminController.js
 const AdminService = require('../services/AdminService');
 
+// [GET]/admin/:slug/login
 class AdminController {
 
-    // [GET]/admin/:slug/login
+    // [GET] /admin/:slug/login
     loginForm(req, res) {
         const slug = req.params.slug;
 
@@ -13,7 +15,7 @@ class AdminController {
         });
     }
 
-    // [POST]/admin/:slug/login
+    // [POST] /admin/:slug/login
     async login(req, res) {
         const slug = req.params.slug;
 
@@ -26,28 +28,27 @@ class AdminController {
                 _id: admin._id.toString(),
                 name: admin.name,
                 email: admin.email,
-                role: "admin"
+                type: "Admin"
             };
 
             res.redirect('/admin');
-
         } catch (err) {
             res.render('admin/login', {
                 slug,
                 loginAction: `/admin/${slug}/login`,
-                error: err.message || 'Đăng nhập thất bại'
+                error: err.message || 'Đăng nhập thất bại.'
             });
         }
     }
 
-    // [GET]/admin/
+    // [GET] /admin/
     dashboard(req, res) {
         res.render('admin/dashboard', {
             user: req.session.user
         });
     }
 
-    // [GET]/admin/users
+    // [GET] /admin/users
     async listUsers(req, res) {
         const page = parseInt(req.query.page) || 1;
         const limit = 10;
@@ -55,7 +56,7 @@ class AdminController {
 
         const query = {
             q: req.query.q || '',
-            role: req.query.role || ''
+            type: req.query.type || ''
         };
 
         try {
@@ -79,20 +80,24 @@ class AdminController {
         }
     }
 
-    // [POST]/admin/users/:id/role
-    async updateRole(req, res) {
+    // [POST] /admin/users/:id/toggle-active
+    async toggleActive(req, res) {
         try {
-            await AdminService.updateUserRole(req.params.id, req.body.role);
+            await AdminService.toggleActive(req.params.id);
             res.redirect('/admin/users');
         } catch (err) {
             res.status(400).send(err.message);
         }
     }
 
-    // [POST]/admin/logout
-    logout(req, res) {
-        req.session.user = null;
-        res.redirect('/');
+    // [DELETE] /admin/users/:id
+    async deleteUser(req, res) {
+        try {
+            await AdminService.deleteUser(req.params.id);
+            res.redirect('/admin/users');
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
     }
 }
 
