@@ -39,7 +39,7 @@ module.exports = {
 
     timeAgo(date) {
         const now = new Date();
-        const diff = (now - new Date(date)) / 1000; // seconds
+        const diff = (now - new Date(date)) / 1000;
 
         if (diff < 60) return "vừa xong";
         if (diff < 3600) return Math.floor(diff / 60) + " phút trước";
@@ -52,4 +52,13 @@ module.exports = {
     toString(value) {
         return value ? value.toString() : "";
     },
+
+    chunk(arr, size) {
+        if (!Array.isArray(arr)) return [];
+        const chunks = [];
+        for (let i = 0; i < arr.length; i += size) {
+            chunks.push(arr.slice(i, i + size));
+        }
+        return chunks;
+    }
 };

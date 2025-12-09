@@ -1,18 +1,14 @@
 const { mongooseToObject, multipleMongooseToObject } = require('../../util/mongoose');
 const AuthorService = require('../services/AuthorService');
 
-// CHECK SLUG HỢP LỆ
-function validateSlug(slug) {
-    return slug === process.env.AUHTOR_LOGIN_SLUG;
-}
-
 class AuthorController {
 
     // [GET] /author/:slug/register
     registerForm(req, res) {
         const slug = req.params.slug;
 
-        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+        if (slug !== process.env.AUHTOR_LOGIN_SLUG)
+            return res.status(403).send("Không hợp lệ.");
 
         res.render('author/register', {
             slug,
@@ -25,12 +21,13 @@ class AuthorController {
     async register(req, res) {
         const slug = req.params.slug;
 
-        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+        if (slug !== process.env.AUHTOR_LOGIN_SLUG)
+            return res.status(403).send("Không hợp lệ.");
 
         try {
-            const { name, email, password, confirm } = req.body;
+            const { name, email, phone, password, confirm } = req.body;
 
-            if (!name || !email || !password || !confirm) {
+            if (!name || !email || !phone || !password || !confirm) {
                 return res.render('author/register', {
                     slug,
                     registerAction: `/author/${slug}/register`,
@@ -46,14 +43,19 @@ class AuthorController {
                 });
             }
 
-            await AuthorService.registerAuthor(name.trim(), email.trim(), password.trim());
+            await AuthorService.registerAuthor(
+                name.trim(),
+                email.trim(),
+                password.trim(),
+                phone.trim()
+            );
 
             res.render('author/login', {
                 slug,
                 loginAction: `/author/${slug}/login`,
                 error: null
             });
-            
+
         } catch (err) {
             res.render('author/register', {
                 slug,
@@ -67,7 +69,8 @@ class AuthorController {
     loginForm(req, res) {
         const slug = req.params.slug;
 
-        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+        if (slug !== process.env.AUHTOR_LOGIN_SLUG)
+            return res.status(403).send("Không hợp lệ.");
 
         res.render('author/login', {
             slug,
@@ -80,7 +83,8 @@ class AuthorController {
     async login(req, res) {
         const slug = req.params.slug;
 
-        if (!validateSlug(slug)) return res.status(403).send("Không hợp lệ.");
+        if (slug !== process.env.AUHTOR_LOGIN_SLUG)
+            return res.status(403).send("Không hợp lệ.");
 
         try {
             const { email, password } = req.body;
@@ -105,18 +109,11 @@ class AuthorController {
         }
     }
 
-    // [POST] /author/logout
-    logout(req, res) {
-        req.session.destroy(() => {
-            res.clearCookie('connect.sid');
-            res.redirect('/');
-        });
-    }
-
     // [GET] /author/profile
-    profileForm(req, res) {
+    async profileForm(req, res) {
+        const doc = await AuthorService.getById(req.session.user._id);
         res.render('author/profile', {
-            user: req.session.user,
+            user: doc.toObject(),
             error: null,
             success: null
         });
@@ -125,28 +122,28 @@ class AuthorController {
     // [POST] /author/profile
     async updateProfile(req, res) {
         try {
-            const { name, email, verifyPassword } = req.body;
+            const { name, phone, verifyPassword } = req.body;
 
-            const updatedUser = await AuthorService.updateProfile(
+            const updated = await AuthorService.updateProfile(
                 req.session.user._id,
                 name,
-                email,
+                phone,
                 verifyPassword
             );
 
-            req.session.user.name = updatedUser.name;
+            req.session.user.name = updated.name;
 
             res.render('author/profile', {
-                user: updatedUser,
+                user: updated.toObject(),
                 success: "Cập nhật hồ sơ thành công.",
                 error: null
             });
 
         } catch (err) {
-            const user = await AuthorService.getById(req.session.user._id);
+            const doc = await AuthorService.getById(req.session.user._id);
 
             res.render('author/profile', {
-                user,
+                user: doc.toObject(),
                 error: err.message,
                 success: null
             });
@@ -155,8 +152,9 @@ class AuthorController {
 
     // [GET] /author/password
     passwordForm(req, res) {
+        const doc = req.session.user;
         res.render('author/password', {
-            user: req.session.user,
+            user: doc,
             error: null,
             success: null
         });
@@ -184,6 +182,22 @@ class AuthorController {
                 error: err.message,
                 success: null
             });
+        }
+    }
+
+    // [POST] /author/verify-password
+    async verifyPassword(req, res) {
+        try {
+            const { password } = req.body;
+
+            const ok = await AuthorService.verifyPassword(req.session.user._id, password);
+
+            if (!ok) return res.json({ success: false, message: "Mật khẩu không đúng." });
+
+            return res.json({ success: true });
+
+        } catch {
+            return res.json({ success: false, message: "Lỗi hệ thống." });
         }
     }
 

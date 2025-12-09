@@ -4,8 +4,17 @@ const { mongooseToObject } = require('../../util/mongoose')
 class SiteController {
 
     // [GET] /
-    index(req, res, next) {
-        res.render('home')
+    async home(req, res, next) {
+        try {
+        const news = await Newdb.find({})
+            .sort({ createdAt: -1 })
+            .limit(7)
+            .lean();
+
+        res.render('home', { news });
+        } catch (err) {
+        next(err);
+        }
     }
 
     // [GET] /member/logout

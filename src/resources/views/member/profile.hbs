@@ -3,7 +3,7 @@
 
     <div class="text-center mb-4">
       <h3 class="fw-bold mt-3">{{user.name}}</h3>
-      <span class="badge bg-primary text-uppercase">{{user.role}}</span>
+      <span class="badge bg-primary text-uppercase">{{user.type}}</span>
     </div>
 
     {{#if success}}
@@ -16,22 +16,22 @@
 
     <form id="profile-form" method="POST" action="/member/profile" class="d-flex flex-column gap-3">
 
-      <input type="hidden" name="verifyPassword" id="verifyPassword">
-
       <div>
         <label class="form-label fw-semibold">Họ và tên</label>
-        <input type="text" name="name" class="form-control" value="{{user.name}}" required>
+        <input type="text" name="name" id="name" class="form-control"
+               value="{{user.name}}" required autocomplete="off">
+        <div id="name-message" class="mt-1" style="font-size: 14px;"></div>
       </div>
 
       <div>
         <label class="form-label fw-semibold">Email</label>
         <input type="text" class="form-control" value="{{user.email}}" disabled>
-        <input type="hidden" name="email" value="{{user.email}}">
       </div>
 
       <div>
         <label class="form-label fw-semibold">Số điện thoại</label>
-        <input type="text" name="phone" id="phone" class="form-control" value="{{user.phone}}">
+        <input type="text" name="phone" id="phone" class="form-control"
+               value="{{user.phone}}" autocomplete="off">
         <div id="phone-message" class="mt-1" style="font-size: 14px;"></div>
       </div>
 
@@ -39,20 +39,23 @@
         type="button"
         id="btn-update"
         class="btn btn-dark w-100 fw-semibold mt-3"
+        disabled
         data-bs-toggle="modal"
         data-bs-target="#passwordModal">
         Cập nhật hồ sơ
       </button>
 
-      <a href="/member/password" class="btn btn-outline-primary w-100">Đổi mật khẩu</a>
+      <a href="/member/password" class="btn btn-outline-primary w-100">
+        Đổi mật khẩu
+      </a>
+
+      <input type="hidden" name="verifyPassword" id="verifyPassword">
 
     </form>
 
   </div>
 </div>
 
-
-<!-- MODAL XÁC NHẬN -->
 <div class="modal fade" id="passwordModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content p-3">

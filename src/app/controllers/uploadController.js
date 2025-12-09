@@ -1,4 +1,4 @@
-const UploadService = require('../services/Upload');
+const UploadService = require('../services/UploadService');
 
 class UploadController {
     async uploadTmp(req, res) {

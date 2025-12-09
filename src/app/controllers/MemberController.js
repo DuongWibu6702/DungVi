@@ -18,7 +18,6 @@ class MemberController {
             }
 
             const user = await MemberService.findByAccount(account);
-
             if (!user || user.type !== "Member") {
                 return res.render('member/login', { error: 'Tài khoản không tồn tại.' });
             }
@@ -75,7 +74,8 @@ class MemberController {
     async profile(req, res) {
         if (!req.session.user) return res.redirect('/member/login');
 
-        const user = await MemberService.getById(req.session.user._id);
+        const doc = await MemberService.getById(req.session.user._id);
+        const user = doc.toObject();
 
         res.render('member/profile', { user, error: null, success: null });
     }
@@ -86,32 +86,59 @@ class MemberController {
             if (!req.session.user) return res.redirect('/member/login');
 
             const userId = req.session.user._id;
-            const { name, email, phone, verifyPassword } = req.body;
+            const { name, phone, verifyPassword } = req.body;
 
-            if (!name || !email || !phone || !verifyPassword) {
-                const user = await MemberService.getById(userId);
+            const doc = await MemberService.getById(userId);
+            const user = doc.toObject();
+
+            if (!verifyPassword) {
                 return res.render('member/profile', {
                     user,
-                    error: 'Vui lòng nhập đầy đủ thông tin.',
+                    error: "Bạn cần xác nhận mật khẩu.",
                     success: null
                 });
             }
 
-            const fullUser = await User.findById(userId);
-            const match = await fullUser.comparePassword(verifyPassword);
-
+            const match = await doc.comparePassword(verifyPassword);
             if (!match) {
-                const user = await MemberService.getById(userId);
                 return res.render('member/profile', {
                     user,
-                    error: 'Mật khẩu xác nhận không đúng.',
+                    error: "Mật khẩu xác nhận không đúng.",
                     success: null
                 });
             }
 
-            await MemberService.updateProfile(userId, { name, email, phone });
+            if (!name || !name.trim()) {
+                return res.render('member/profile', {
+                    user,
+                    error: "Họ tên không được để trống.",
+                    success: null
+                });
+            }
 
-            const updatedUser = await MemberService.getById(userId);
+            let phoneClean = "";
+            if (phone && phone.trim() !== "") {
+                const normalized = phone.trim().replace(/[^\d+]/g, "");
+                const isValidVN = /^(\+84|0)(3|5|7|8|9)\d{8}$/.test(normalized);
+
+                if (!isValidVN) {
+                    return res.render('member/profile', {
+                        user,
+                        error: "Số điện thoại không hợp lệ.",
+                        success: null
+                    });
+                }
+
+                phoneClean = normalized;
+            }
+
+            await MemberService.updateProfile(userId, {
+                name: name.trim(),
+                phone: phoneClean
+            });
+
+            const updatedDoc = await MemberService.getById(userId);
+            const updatedUser = updatedDoc.toObject();
 
             res.render('member/profile', {
                 user: updatedUser,
@@ -120,7 +147,9 @@ class MemberController {
             });
 
         } catch (error) {
-            const user = await MemberService.getById(req.session.user._id);
+            const doc = await MemberService.getById(req.session.user._id);
+            const user = doc.toObject();
+
             res.render('member/profile', {
                 user,
                 error: error.message || 'Lỗi hệ thống',
@@ -133,22 +162,24 @@ class MemberController {
     async password(req, res) {
         if (!req.session.user) return res.redirect('/member/login');
 
-        const user = await MemberService.getById(req.session.user._id);
+        const doc = await MemberService.getById(req.session.user._id);
+        const user = doc.toObject();
+
         res.render('member/password', { user, error: null, success: null });
     }
 
-    // [POST] /member/password
+    // [PATCH] /member/password
     async updatePassword(req, res) {
         try {
             const userId = req.session.user?._id;
             if (!userId) return res.redirect('/member/login');
 
             const { oldPassword, newPassword, confirmPassword } = req.body;
-            const user = await User.findById(userId);
+            const doc = await User.findById(userId);
 
             if (!oldPassword || !newPassword || !confirmPassword) {
                 return res.render('member/password', {
-                    user,
+                    user: doc.toObject(),
                     error: 'Vui lòng nhập đầy đủ thông tin.',
                     success: null
                 });
@@ -156,16 +187,16 @@ class MemberController {
 
             if (newPassword !== confirmPassword) {
                 return res.render('member/password', {
-                    user,
+                    user: doc.toObject(),
                     error: 'Mật khẩu nhập lại không khớp.',
                     success: null
                 });
             }
 
-            const match = await user.comparePassword(oldPassword);
+            const match = await doc.comparePassword(oldPassword);
             if (!match) {
                 return res.render('member/password', {
-                    user,
+                    user: doc.toObject(),
                     error: 'Mật khẩu hiện tại không đúng.',
                     success: null
                 });
@@ -173,14 +204,16 @@ class MemberController {
 
             await MemberService.updatePassword(userId, newPassword);
 
-            res.render('member/profile', {
-                user,
+            res.render('member/password', {
+                user: doc.toObject(),
                 success: 'Đổi mật khẩu thành công.',
                 error: null
             });
 
         } catch (error) {
-            const user = await MemberService.getById(req.session.user._id);
+            const doc = await MemberService.getById(req.session.user._id);
+            const user = doc.toObject();
+
             res.render('member/password', {
                 user,
                 error: error.message || 'Lỗi hệ thống',
@@ -192,20 +225,29 @@ class MemberController {
     // [POST] /member/verify-password
     async verifyPassword(req, res) {
         try {
-            if (!req.session.user) return res.json({ error: "Bạn chưa đăng nhập." });
+            if (!req.session.user) {
+                return res.json({ success: false, message: "Bạn chưa đăng nhập." });
+            }
 
             const { password } = req.body;
-            if (!password) return res.json({ error: "Vui lòng nhập mật khẩu." });
+            if (!password) {
+                return res.json({ success: false, message: "Vui lòng nhập mật khẩu." });
+            }
 
-            const user = await User.findById(req.session.user._id);
-            if (!user) return res.json({ error: "Không tìm thấy người dùng." });
+            const doc = await User.findById(req.session.user._id);
+            if (!doc) {
+                return res.json({ success: false, message: "Không tìm thấy người dùng." });
+            }
 
-            const match = await user.comparePassword(password);
-            if (!match) return res.json({ error: "Mật khẩu không đúng." });
+            const match = await doc.comparePassword(password);
+            if (!match) {
+                return res.json({ success: false, message: "Mật khẩu không đúng." });
+            }
 
-            res.json({ success: true });
+            return res.json({ success: true });
+
         } catch {
-            res.json({ error: "Lỗi hệ thống." });
+            return res.json({ success: false, message: "Lỗi hệ thống." });
         }
     }
 }

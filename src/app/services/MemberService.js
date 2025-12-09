@@ -6,26 +6,24 @@ function normalizeEmail(email) {
     return String(email || '').trim().toLowerCase();
 }
 
-function normalizePhone(raw) {
+function cleanPhone(raw) {
     if (!raw) return '';
-    let phone = String(raw).replace(/[\s\-().]/g, '');
-    if (phone.startsWith('0')) phone = '+84' + phone.slice(1);
-    return phone;
+    return String(raw).replace(/[^\d+]/g, '');
 }
 
 class MemberService {
+
     async registerMember(name, email, phone, password) {
         const normEmail = normalizeEmail(email);
-        const normPhone = normalizePhone(phone);
+        const normPhone = cleanPhone(phone);
 
         const exists = await User.findOne({
             $or: [{ email: normEmail }, { phone: normPhone }]
         });
 
         if (exists) {
-            const msg = 'Email hoặc số điện thoại đã tồn tại.';
-            const error = new Error(msg);
-            error.msg = msg;
+            const error = new Error('Email hoặc số điện thoại đã tồn tại.');
+            error.msg = 'Email hoặc số điện thoại đã tồn tại.';
             throw error;
         }
 
@@ -41,33 +39,31 @@ class MemberService {
     }
 
     async getById(userId) {
-        return await User.findById(userId).lean();
+        return await User.findById(userId); // document, không lean()
     }
 
     async updateProfile(userId, data) {
-        const { name, email, phone } = data;
+        const { name, phone } = data;
+        const phoneClean = cleanPhone(phone);
 
-        const normEmail = normalizeEmail(email);
-        const normPhone = normalizePhone(phone);
+        if (phoneClean) {
+            const conflict = await User.findOne({
+                _id: { $ne: userId },
+                phone: phoneClean
+            });
 
-        const conflict = await User.findOne({
-            _id: { $ne: userId },
-            $or: [{ email: normEmail }, { phone: normPhone }]
-        });
-
-        if (conflict) {
-            const msg = 'Email hoặc số điện thoại đã tồn tại.';
-            const error = new Error(msg);
-            error.msg = msg;
-            throw error;
+            if (conflict) {
+                const error = new Error('Số điện thoại đã tồn tại.');
+                error.msg = 'Số điện thoại đã tồn tại.';
+                throw error;
+            }
         }
 
         return await User.findByIdAndUpdate(
             userId,
             {
                 name: name.trim(),
-                email: normEmail,
-                phone: normPhone
+                phone: phoneClean
             },
             { new: true }
         );
@@ -92,7 +88,7 @@ class MemberService {
             return await Member.findOne({ email: normalizeEmail(acct) });
         }
 
-        return await Member.findOne({ phone: normalizePhone(acct) });
+        return await Member.findOne({ phone: cleanPhone(acct) });
     }
 }
 

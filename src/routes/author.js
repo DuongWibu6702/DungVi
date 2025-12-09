@@ -16,15 +16,15 @@ const storage = multer.diskStorage({
 
 const uploadThumbnail = multer({ storage }).single('thumbnail');
 
-// ROUTES
 router.get('/:slug/login', AuthorController.loginForm);
 router.post('/:slug/login', AuthorController.login);
 router.get('/:slug/register', AuthorController.registerForm);
 router.post('/:slug/register', AuthorController.register);
-router.get('/password', requireAuthor, AuthorController.passwordForm);
-router.post('/password', requireAuthor, AuthorController.updatePassword);
-router.get('/profile', requireAuthor, AuthorController.profileForm);
-router.post('/profile', requireAuthor, AuthorController.updateProfile);
+router.get('/profile', AuthorController.profileForm);
+router.post('/profile', AuthorController.updateProfile);
+router.get('/password', AuthorController.passwordForm);
+router.post('/password', AuthorController.updatePassword);
+router.post('/verify-password', AuthorController.verifyPassword);
 router.get('/stored/news', requireAuthor, AuthorController.stored);
 router.get('/trash/news', requireAuthor, AuthorController.trash);
 router.get('/posts/add-new', requireAuthor, AuthorController.createForm);

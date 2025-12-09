@@ -12,7 +12,7 @@ class NewsController {
         NewsService.getPaginatedList(page, perPage)
             .then(([news, total]) => {
                 res.render('user/news/index', {
-                    newdb: multipleMongooseToObject(news),   // news vẫn là Mongoose → convert được
+                    newdb: multipleMongooseToObject(news), 
                     current: page,
                     totalPages: Math.ceil(total / perPage),
                     user: req.session.user || null

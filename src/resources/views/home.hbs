@@ -1,0 +1,120 @@
+<section class="dv-hero bg-dark text-light py-5">
+  <div class="container text-center py-5">
+    <h1 class="fw-bold mb-3">Quỹ Học Bổng DungVi</h1>
+    <p class="lead mb-4">Trao cơ hội – Nâng bước tương lai</p>
+  </div>
+</section>
+
+<section class="dv-about py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h2 class="fw-bold mb-3">Giới thiệu</h2>
+        <p>
+          Quỹ học bổng DungVi được thành lập nhằm mang đến cơ hội tiếp cận giáo dục tốt hơn cho học sinh và sinh viên vượt khó.
+        </p>
+        <a href="/gioi-thieu" class="btn btn-outline-primary mt-3">Xem thêm</a>
+      </div>
+      <div class="col-lg-6">
+        <div class="bg-light border rounded p-5 text-center">
+          Hình minh họa
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dv-scholarships py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">Chương trình học bổng</h2>
+    <div class="row g-4">
+
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Học bổng DungVi A</h5>
+            <p class="card-text">Hỗ trợ học sinh THPT có thành tích học tập tốt.</p>
+            <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Học bổng DungVi B</h5>
+            <p class="card-text">Dành cho sinh viên đại học vượt khó.</p>
+            <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Học bổng tài năng</h5>
+            <p class="card-text">Khuyến khích các tài năng trẻ nổi bật.</p>
+            <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="dv-news-slider py-5">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">Tin tức mới</h2>
+
+    <div class="dv-carousel-wrapper position-relative">
+
+      <button id="dvPrevNews" class="dv-nav-btn dv-prev">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="dv-carousel overflow-hidden">
+        <div class="dv-track d-flex">
+          {{#each news}}
+          <div class="dv-item">
+            <a href="/news/{{slug}}" class="text-decoration-none text-dark">
+              <div class="card h-100 dv-news-card">
+
+                {{#if thumbnail}}
+                <div class="dv-news-thumb">
+                  <img src="{{thumbnail}}" alt="{{name}}">
+                </div>
+                {{else}}
+                <div class="dv-news-thumb bg-light text-center p-5">
+                  Không có ảnh
+                </div>
+                {{/if}}
+
+                <div class="card-body">
+                  <h5 class="card-title">{{name}}</h5>
+                  <p class="card-text opacity-75">{{description}}</p>
+                </div>
+
+              </div>
+            </a>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+
+      <button id="dvNextNews" class="dv-nav-btn dv-next">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="dv-cta bg-primary text-light py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">Đồng hành cùng DungVi</h2>
+    <p class="mb-4">Mỗi sự đóng góp đều lan tỏa thêm một cơ hội học tập mới.</p>
+    <a href="#" class="btn btn-light px-4 py-2">Ủng hộ ngay</a>
+  </div>
+</section>

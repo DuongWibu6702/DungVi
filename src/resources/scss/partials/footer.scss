@@ -1,0 +1,54 @@
+.dv-footer {
+  a {
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  h5 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  ul li {
+    font-size: 0.95rem;
+  }
+
+  .dv-social a {
+    font-size: 1.2rem;
+  }
+
+  .dv-backtotop {
+    position: absolute;
+    right: 25px;
+    bottom: 25px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #ffffff20;
+    color: #fff;
+    font-size: 1.2rem;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: 0.25s ease;
+
+    &:hover {
+      background: #ffffff35;
+      transform: translateY(-3px);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .dv-backtotop {
+      right: 15px;
+      bottom: 15px;
+      width: 42px;
+      height: 42px;
+      font-size: 1rem;
+    }
+  }
+}

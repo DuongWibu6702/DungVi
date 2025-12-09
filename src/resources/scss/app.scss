@@ -1,8 +1,10 @@
 @use 'variables' as *;
 
+@use 'home';
 @use 'user/news/index';
 @use 'user/news/show';
 @use 'partials/header';
+@use 'partials/footer';
 
 .news-article {
   .article-body {
