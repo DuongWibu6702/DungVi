@@ -6,7 +6,6 @@ const multer = require('multer');
 const { requireAuthor } = require('../app/middlewares/websession');
 const AuthorController = require('../app/controllers/AuthorController');
 
-// Multer config
 const storage = multer.diskStorage({
     destination: (req, file, cb) =>
         cb(null, path.join(__dirname, '../public/uploads/tmp')),
@@ -16,15 +15,6 @@ const storage = multer.diskStorage({
 
 const uploadThumbnail = multer({ storage }).single('thumbnail');
 
-router.get('/:slug/login', AuthorController.loginForm);
-router.post('/:slug/login', AuthorController.login);
-router.get('/:slug/register', AuthorController.registerForm);
-router.post('/:slug/register', AuthorController.register);
-router.get('/profile', AuthorController.profileForm);
-router.post('/profile', AuthorController.updateProfile);
-router.get('/password', AuthorController.passwordForm);
-router.post('/password', AuthorController.updatePassword);
-router.post('/verify-password', AuthorController.verifyPassword);
 router.get('/stored/news', requireAuthor, AuthorController.stored);
 router.get('/trash/news', requireAuthor, AuthorController.trash);
 router.get('/posts/add-new', requireAuthor, AuthorController.createForm);

@@ -60,5 +60,29 @@ module.exports = {
             chunks.push(arr.slice(i, i + size));
         }
         return chunks;
+    },
+
+    formatDay(date) {
+        return new Date(date).getDate();
+    },
+
+    formatMonthShort(date) {
+        const m = new Date(date).getMonth() + 1;
+        return `Th${m}`;
+    },
+
+    json(context) {
+        return JSON.stringify(context);
+    },
+
+    formatDateTimeVN(date) {
+        if (!date) return "";
+        const d = new Date(date);
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mm = String(d.getMinutes()).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mo = String(d.getMonth() + 1).padStart(2, "0");
+        const yyyy = d.getFullYear();
+        return `${hh}:${mm} ${dd}/${mo}/${yyyy}`;
     }
 };

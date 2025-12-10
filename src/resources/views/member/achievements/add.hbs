@@ -1,0 +1,71 @@
+<div class="container mt-4">
+    <h3 class="mb-3">Đăng điểm thành tích</h3>
+
+    {{#if error}}
+        <div class="alert alert-danger">{{error}}</div>
+    {{/if}}
+
+    {{#if success}}
+        <div class="alert alert-success">{{success}}</div>
+    {{/if}}
+
+    <div id="subjectOptions"
+        data-options='{{{json subjects}}}'>
+    </div>
+
+    <form id="achievementForm" method="POST" action="/member/achievements/add" enctype="multipart/form-data">
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Năm học</label>
+                <input type="number" class="form-control" name="schoolYear" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Học kỳ</label>
+                <select class="form-select" name="semester" required>
+                    <option value="1">Học kỳ I</option>
+                    <option value="2">Học kỳ II</option>
+                </select>
+            </div>
+        </div>
+
+        <label class="form-label fw-bold">Danh sách môn & điểm</label>
+
+        <div id="subjectsContainer">
+
+            <div class="row g-3 subject-row">
+                <div class="col-md-6">
+                    <select class="form-select subject-select" name="subject[]" required>
+                        <option value="">Chọn môn</option>
+                        {{#each subjects}}
+                            <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <input type="number" name="score[]" class="form-control" min="0" max="10" required placeholder="Điểm">
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger w-100 remove-row">Xóa</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-end mt-2">
+            <button type="button" class="btn btn-secondary" id="addRowBtn">+ Thêm dòng</button>
+        </div>
+
+        <div class="mt-4">
+            <label class="form-label">Ảnh/PDF minh chứng</label>
+            <input type="file" class="form-control" name="image" accept="image/*,.pdf" required>
+        </div>
+
+        <button class="btn btn-primary w-100 mt-3">Gửi đăng ký</button>
+
+    </form>
+</div>
+
+<script src="/js/member/achievements/add.js"></script>

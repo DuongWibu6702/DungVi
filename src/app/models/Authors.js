@@ -16,7 +16,7 @@ const Author = User.discriminator(
                 message: 'Số điện thoại không hợp lệ (VN)'
             }
         },
-        active: { type: Boolean, default: false }
+        directPost: { type: Boolean, default: false }
     })
 );
 

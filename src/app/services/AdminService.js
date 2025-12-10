@@ -1,5 +1,7 @@
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
 const User = require('../models/Users');
+const Member = require('../models/Members');
+const Author = require('../models/Authors'); 
 const Admin = require('../models/Admins');
 
 function normalizeEmail(email = '') {
@@ -74,6 +76,45 @@ class AdminService {
         }
 
         return User.findByIdAndDelete(id);
+    }
+
+    async changeType(userId, newType) {
+        const oldUser = await User.findById(userId);
+        if (!oldUser) throw new Error("Không tìm thấy tài khoản.");
+
+        if (oldUser.type === "Admin") {
+            throw new Error("Không thể thay đổi quyền của Admin.");
+        }
+
+        if (newType === "Admin") {
+            throw new Error("Không thể chuyển sang Admin.");
+        }
+
+        if (oldUser.type === newType) return oldUser;
+
+        const data = oldUser.toObject();
+        delete data._id;
+        delete data.__v;
+
+        await User.deleteOne({ _id: userId });
+
+        const newData = {
+            _id: new mongoose.Types.ObjectId(userId),
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            phone: data.phone,
+            type: newType
+        };
+
+        if (newType === "Author") {
+            newData.active = false;
+        }
+
+        const model = newType === "Author" ? Author : Member;
+        await model.collection.insertOne(newData);
+
+        return await model.findById(userId);
     }
 }
 

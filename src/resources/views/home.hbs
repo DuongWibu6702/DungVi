@@ -1,120 +1,197 @@
-<section class="dv-hero bg-dark text-light py-5">
-  <div class="container text-center py-5">
-    <h1 class="fw-bold mb-3">Quỹ Học Bổng DungVi</h1>
-    <p class="lead mb-4">Trao cơ hội – Nâng bước tương lai</p>
-  </div>
-</section>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-<section class="dv-about py-5">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <h2 class="fw-bold mb-3">Giới thiệu</h2>
-        <p>
-          Quỹ học bổng DungVi được thành lập nhằm mang đến cơ hội tiếp cận giáo dục tốt hơn cho học sinh và sinh viên vượt khó.
-        </p>
-        <a href="/gioi-thieu" class="btn btn-outline-primary mt-3">Xem thêm</a>
-      </div>
-      <div class="col-lg-6">
-        <div class="bg-light border rounded p-5 text-center">
-          Hình minh họa
-        </div>
+<!-- HERO SLIDER -->
+<div id="dvHeroSlider" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#dvHeroSlider" data-bs-slide-to="0" class="active"></button>
+    <button type="button" data-bs-target="#dvHeroSlider" data-bs-slide-to="1"></button>
+    <button type="button" data-bs-target="#dvHeroSlider" data-bs-slide-to="2"></button>
+  </div>
+
+  <div class="carousel-inner">
+
+    <div class="carousel-item active">
+      <div class="dv-slide-bg" style="background-image: url('/imgs/home/home1.jpg');"></div>
+      <div class="carousel-caption">
+        <h1 class="dv-title">Bước Cùng<br>Thế Hệ Trẻ Việt Nam</h1>
+        <p class="dv-desc">Là phương châm hoạt động của Quỹ học bổng DungVi</p>
+        <a href="/about" class="btn btn-primary btn-lg rounded-pill px-4 py-2">Tìm Hiểu Thêm</a>
       </div>
     </div>
-  </div>
-</section>
 
-<section class="dv-scholarships py-5 bg-light">
-  <div class="container">
-    <h2 class="fw-bold text-center mb-4">Chương trình học bổng</h2>
-    <div class="row g-4">
-
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Học bổng DungVi A</h5>
-            <p class="card-text">Hỗ trợ học sinh THPT có thành tích học tập tốt.</p>
-            <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
-          </div>
-        </div>
+    <div class="carousel-item">
+      <div class="dv-slide-bg" style="background-image: url('/imgs/home/home2.jpg');"></div>
+      <div class="carousel-caption">
+        <h1 class="dv-title">Do Sinh Viên<br>Vì Sinh Viên</h1>
+        <p class="dv-desc">DungVi hoạt động nhờ sự tham gia của các bạn trẻ</p>
+        <a href="/community" class="btn btn-primary btn-lg rounded-pill px-4 py-2">Tham Gia</a>
       </div>
-
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Học bổng DungVi B</h5>
-            <p class="card-text">Dành cho sinh viên đại học vượt khó.</p>
-            <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Học bổng tài năng</h5>
-            <p class="card-text">Khuyến khích các tài năng trẻ nổi bật.</p>
-            <a href="#" class="btn btn-primary btn-sm">Xem chi tiết</a>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
-</section>
 
-<section class="dv-news-slider py-5">
-  <div class="container">
-    <h2 class="fw-bold text-center mb-4">Tin tức mới</h2>
-
-    <div class="dv-carousel-wrapper position-relative">
-
-      <button id="dvPrevNews" class="dv-nav-btn dv-prev">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-
-      <div class="dv-carousel overflow-hidden">
-        <div class="dv-track d-flex">
-          {{#each news}}
-          <div class="dv-item">
-            <a href="/news/{{slug}}" class="text-decoration-none text-dark">
-              <div class="card h-100 dv-news-card">
-
-                {{#if thumbnail}}
-                <div class="dv-news-thumb">
-                  <img src="{{thumbnail}}" alt="{{name}}">
-                </div>
-                {{else}}
-                <div class="dv-news-thumb bg-light text-center p-5">
-                  Không có ảnh
-                </div>
-                {{/if}}
-
-                <div class="card-body">
-                  <h5 class="card-title">{{name}}</h5>
-                  <p class="card-text opacity-75">{{description}}</p>
-                </div>
-
-              </div>
-            </a>
-          </div>
-          {{/each}}
-        </div>
+    <div class="carousel-item">
+      <div class="dv-slide-bg" style="background-image: url('/imgs/home/home3.jpg');"></div>
+      <div class="carousel-caption">
+        <h1 class="dv-title">Vì Thế Hệ<br>Tương Lai</h1>
+        <p class="dv-desc">Hãy cùng DungVi hỗ trợ sinh viên nghèo vượt khó</p>
+        <a href="/donate" class="btn btn-primary btn-lg rounded-pill px-4 py-2">Quyên Góp</a>
       </div>
-
-      <button id="dvNextNews" class="dv-nav-btn dv-next">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-
     </div>
 
   </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#dvHeroSlider" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+
+  <button class="carousel-control-next" type="button" data-bs-target="#dvHeroSlider" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+
+
+<!-- HELP SECTION -->
+<section class="dv-help-section container py-5">
+
+  <div class="row align-items-center">
+    
+    <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
+      <h2 class="dv-help-title fw-bold mb-4">
+        Bạn là sinh viên đang cần sự<br>trợ giúp ?
+      </h2>
+
+      <p class="dv-help-desc mb-4">
+        Học bổng DungVi hướng tới các bạn sinh viên nghèo vượt khó cần sự trợ giúp
+        về tài chính để giảm gánh nặng cơm áo gạo tiền và có nhiều thời gian hơn cho con đường học tập.
+        Hãy mạnh dạn chia sẻ với DungVi thông qua hồ sơ học bổng.
+      </p>
+
+      <a href="/about-us" class="btn btn-primary btn-lg rounded-pill px-4 py-2">
+        Tìm Hiểu Thêm
+      </a>
+    </div>
+
+
+    <div class="col-md-6">
+      <div class="row g-4">
+
+        <!-- Box 1 -->
+        <div class="col-6">
+          <div class="dv-help-box text-center p-4">
+            <i class="bi bi-journal-check dv-icon"></i>
+            <h5 class="fw-bold mt-3">Hướng Dẫn</h5>
+          </div>
+        </div>
+
+        <!-- Box 2 -->
+        <div class="col-6">
+          <div class="dv-help-box text-center p-4">
+            <i class="bi bi-cloud-upload dv-icon"></i>
+            <h5 class="fw-bold mt-3">Nộp Hồ Sơ Online</h5>
+          </div>
+        </div>
+
+        <!-- Box 3 -->
+        <div class="col-6">
+          <div class="dv-help-box text-center p-4">
+            <i class="bi bi-question-circle dv-icon dv-icon-faq"></i>
+            <h5 class="fw-bold mt-3">Hỏi Đáp (FAQ)</h5>
+          </div>
+        </div>
+
+        <!-- Box 4 -->
+        <div class="col-6">
+          <div class="dv-help-box text-center p-4">
+            <i class="bi bi-bar-chart-line dv-icon dv-icon-stat"></i>
+            <h5 class="fw-bold mt-3">Thống Kê</h5>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
 </section>
 
-<section class="dv-cta bg-primary text-light py-5">
+<!-- STATISTICS SECTION -->
+<section class="dv-stats-section py-5">
   <div class="container text-center">
-    <h2 class="fw-bold mb-3">Đồng hành cùng DungVi</h2>
-    <p class="mb-4">Mỗi sự đóng góp đều lan tỏa thêm một cơ hội học tập mới.</p>
-    <a href="#" class="btn btn-light px-4 py-2">Ủng hộ ngay</a>
+
+    <h2 class="dv-stats-title fw-bold mb-5">
+      Thống kê học bổng
+    </h2>
+
+    <div class="row justify-content-center align-items-center">
+
+      <div class="col-md-3 col-12 mb-4 mb-md-0">
+        <div class="dv-stats-number dv-blue">911</div>
+        <div class="dv-stats-label">hồ sơ nhận được</div>
+      </div>
+
+      <div class="col-md-1 d-none d-md-flex justify-content-center">
+        <div class="dv-divider"></div>
+      </div>
+
+      <div class="col-md-3 col-12 mb-4 mb-md-0">
+        <div class="dv-stats-number dv-blue">164</div>
+        <div class="dv-stats-label">suất học bổng</div>
+      </div>
+
+      <div class="col-md-1 d-none d-md-flex justify-content-center">
+        <div class="dv-divider"></div>
+      </div>
+
+      <div class="col-md-3 col-12">
+        <div class="dv-stats-number dv-yellow">771</div>
+        <div class="dv-stats-label">triệu VND được trao</div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- HOME NEWS SECTION -->
+<section class="dv-home-news-section py-5">
+  <div class="container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold mb-0">Tin tức mới nhất</h2>
+      <a href="/news" class="btn btn-outline-primary rounded-pill px-4">Xem thêm</a>
+    </div>
+
+    <div class="row">
+
+      {{#each news}}
+      <div class="col-md-4 mb-4">
+        <a href="/news/{{this.slug}}" class="dv-news-card d-block">
+
+          <div class="dv-news-thumb">
+            <img src="{{this.thumbnail}}" alt="{{this.name}}">
+
+            <div class="dv-news-date">
+              <div class="day">{{formatDay this.createdAt}}</div>
+              <div class="month">{{formatMonthShort this.createdAt}}</div>
+            </div>
+          </div>
+
+          <div class="dv-news-content">
+            <h3 class="dv-news-title">{{truncate this.name 110}}</h3>
+            <p class="dv-news-desc">{{truncate this.description 150}}</p>
+
+            <div class="dv-news-footer d-flex justify-content-between text-muted mt-3">
+              <span><i class="bi bi-person"></i> {{this.author}}</span>
+              <span><i class="bi bi-chat"></i> {{this.comments}} comments</span>
+            </div>
+          </div>
+
+        </a>
+      </div>
+      {{/each}}
+
+    </div>
+
   </div>
 </section>

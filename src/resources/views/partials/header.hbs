@@ -18,6 +18,10 @@
           <a class="nav-link px-3" href="/news">Tin tức</a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link px-3" href="/ranking/year?year=2025">Bảng xếp hạng</a>
+        </li>
+
         {{!-- Khi chưa đăng nhập --}}
         {{#unless user}}
           <li class="nav-item">
@@ -61,19 +65,20 @@
 
     {{!-- MEMBER --}}
     {{#if (eq user.type "Member")}}
+      <a href="/member/achievements/add" class="btn btn-danger w-100">Thành tích</a>
       <a href="/member/profile" class="btn btn-danger w-100">Thông tin người dùng</a>
     {{/if}}
 
     {{!-- AUTHOR --}}
     {{#if (eq user.type "Author")}}
       <a href="/member/profile" class="btn btn-danger w-100">Thông tin người dùng</a>
-      <a href="/author/stored/news" class="btn btn-warning w-100">Quản lý bài viết</a>
+      <a href="/author/stored/news" class="btn btn-danger w-100">Quản lý bài viết</a>
     {{/if}}
 
     {{!-- ADMIN --}}
     {{#if (eq user.type "Admin")}}
       <a href="/member/profile" class="btn btn-danger w-100">Thông tin người dùng</a>
-      <a href="/author/stored/news" class="btn btn-warning w-100">Quản lý bài viết</a>
+      <a href="/author/stored/news" class="btn btn-danger w-100">Quản lý bài viết</a>
       <a href="/admin/users" class="btn btn-primary w-100">Quản lý người dùng</a>
     {{/if}}
 

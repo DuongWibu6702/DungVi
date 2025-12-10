@@ -10,5 +10,6 @@ router.get('/', requireAdmin, AdminController.dashboard);
 router.get('/users', requireAdmin, AdminController.listUsers);
 router.patch('/users/:id/toggle-active', requireAdmin, AdminController.toggleActive);
 router.delete('/users/:id/delete', requireAdmin, AdminController.deleteUser);
+router.patch('/users/:id/change-type', requireAdmin, AdminController.changeType);
 
 module.exports = router;

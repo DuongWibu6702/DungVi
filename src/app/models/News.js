@@ -14,6 +14,20 @@ const NewdbSchema = new Schema(
       trim: true,
     },
 
+    seoTitle: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 70,
+    },
+
+    seoDescription: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 160,
+    },
+
     thumbnail: {
       type: String,
       trim: true,
@@ -29,15 +43,16 @@ const NewdbSchema = new Schema(
     body: {
       type: String,
       required: true,
-      set: (value) => sanitizeHtml(value, {
-        allowedTags: [
-          'p','br','b','i','u','strong','em','ul','ol','li','a','img','h1','h2','h3','blockquote','pre','code'
-        ],
-        allowedAttributes: {
-          a: ['href','target','rel'],
-          img: ['src','alt','width','height'],
-        },
-      }),
+      set: (value) =>
+        sanitizeHtml(value, {
+          allowedTags: [
+            'p','br','b','i','u','strong','em','ul','ol','li','a','img','h1','h2','h3','blockquote','pre','code',
+          ],
+          allowedAttributes: {
+            a: ['href','target','rel'],
+            img: ['src','alt','width','height'],
+          },
+        }),
     },
 
     author: {
@@ -52,24 +67,24 @@ const NewdbSchema = new Schema(
       trim: true,
       validate: {
         validator: (v) => {
-          if (!v) return true; // cho phép rỗng
+          if (!v) return true;
           try {
-            new URL(v); // Node.js URL parser
+            new URL(v);
             return true;
           } catch {
             return false;
           }
         },
-        message: 'Source phải là URL hợp lệ'
+        message: 'Source phải là URL hợp lệ',
       },
     },
 
     images: {
       type: [String],
       validate: {
-        validator: arr => arr.length <= 20,
-        message: 'Tối đa 20 ảnh'
-      }
+        validator: (arr) => arr.length <= 20,
+        message: 'Tối đa 20 ảnh',
+      },
     },
 
     slug: {
@@ -81,7 +96,7 @@ const NewdbSchema = new Schema(
   { timestamps: true }
 );
 
-NewdbSchema.pre('save', async function(next) {
+NewdbSchema.pre('save', async function (next) {
   if (!this.slug) {
     let baseSlug = slugify(this.name, { lower: true, strict: true });
     let slug = baseSlug;

@@ -1,0 +1,123 @@
+<h2 class="mb-4">Bảng xếp hạng năm học {{year}}</h2>
+
+<div class="row">
+
+    <!-- TIỂU HỌC -->
+    <div class="col-md-4">
+        <h4 class="mb-3">Tiểu học</h4>
+
+        {{#if ranking.primary.length}}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Điểm trung bình</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each ranking.primary}}
+                <tr>
+                    <td><a href="/profile/{{_id}}">{{name}}</a></td>
+                    <td>
+                        <span class="avg-score text-primary fw-bold"
+                              data-id="{{_id}}"
+                              style="cursor:pointer;">
+                            {{avgScore}}
+                        </span>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <p>Không có dữ liệu.</p>
+        {{/if}}
+    </div>
+
+    <!-- THCS -->
+    <div class="col-md-4">
+        <h4 class="mb-3">Trung học cơ sở</h4>
+
+        {{#if ranking.secondary.length}}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Điểm trung bình</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each ranking.secondary}}
+                <tr>
+                    <td><a href="/profile/{{_id}}">{{name}}</a></td>
+                    <td>
+                        <span class="avg-score text-primary fw-bold"
+                              data-id="{{_id}}"
+                              style="cursor:pointer;">
+                            {{avgScore}}
+                        </span>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <p>Không có dữ liệu.</p>
+        {{/if}}
+    </div>
+
+    <!-- THPT -->
+    <div class="col-md-4">
+        <h4 class="mb-3">Trung học phổ thông</h4>
+
+        {{#if ranking.high.length}}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Điểm trung bình</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each ranking.high}}
+                <tr>
+                    <td><a href="/profile/{{_id}}">{{name}}</a></td>
+                    <td>
+                        <span class="avg-score text-primary fw-bold"
+                              data-id="{{_id}}"
+                              style="cursor:pointer;">
+                            {{avgScore}}
+                        </span>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <p>Không có dữ liệu.</p>
+        {{/if}}
+    </div>
+
+</div>
+
+<!-- MENU FLOATING -->
+<div id="scoreMenu"
+     class="bg-light border rounded p-2 position-absolute d-none"
+     style="z-index: 1000; width: 240px;">
+    
+    <!-- Trung bình chung -->
+    <div class="score-option p-2 border-bottom fw-bold"
+         data-type="avg" 
+         style="cursor:pointer;">
+        Điểm trung bình chung
+    </div>
+
+    <!-- Danh sách môn -->
+    <div id="subjectList"></div>
+</div>
+
+<script>
+    window.subjects = {{{json subjects}}};
+</script>
+
+<script src="/js/ranking/rankings.js"></script>

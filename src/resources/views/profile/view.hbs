@@ -1,0 +1,43 @@
+<h2>Trang cá nhân</h2>
+
+<h3>{{profile.name}}</h3>
+
+<hr>
+
+<h3>Điểm đã duyệt</h3>
+
+{{#if (not groups)}}
+    <p>Chưa có điểm nào được duyệt.</p>
+{{/if}}
+
+{{#each groups}}
+    <h4>Năm học {{@key}}</h4>
+
+    {{#each this}}
+        <div class="card mb-3">
+            <div class="card-header">
+                Học kỳ {{@key}}
+            </div>
+
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Môn</th>
+                        <th>Điểm</th>
+                        <th>Ngày nộp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each this}}
+                    <tr>
+                        <td>{{subject}}</td>
+                        <td>{{score}}</td>
+                        <td>{{formatDateTimeVN createdAt}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    {{/each}}
+
+{{/each}}

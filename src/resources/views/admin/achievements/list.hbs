@@ -1,0 +1,42 @@
+<h2>Duyệt điểm thành viên</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Thành viên</th>
+            <th>Năm học</th>
+            <th>Học kỳ</th>
+            <th>Minh chứng</th>
+            <th>Thời gian nộp</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {{#each submissions}}
+        <tr>
+            <td>{{memberName}}</td>
+
+            <td>{{schoolYear}}</td>
+            <td>{{semester}}</td>
+
+            <td>
+                {{#eq fileType "pdf"}}
+                    <span>PDF</span>
+                {{else}}
+                    <img src="{{file}}" style="height:40px;">
+                {{/eq}}
+            </td>
+
+            <td>{{formatDateTimeVN createdAt}}</td>
+
+            <td>
+                <a href="/admin/achievements/detail?id={{_id}}"
+                    class="btn btn-primary btn-sm">
+                    Xem chi tiết
+                </a>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

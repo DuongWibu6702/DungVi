@@ -3,15 +3,6 @@
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold mb-0">Bảng điều khiển</h2>
-
-        <div>
-            <span class="me-3 fw-semibold">
-                Xin chào, {{admin.name}}
-            </span>
-            <a href="/admin/logout" class="btn btn-outline-danger btn-sm">
-                Đăng xuất
-            </a>
-        </div>
     </div>
 
     <!-- CARD GRID -->
@@ -35,6 +26,17 @@
                     <h5 class="card-title fw-bold">Bài viết</h5>
                     <p class="text-muted mb-2">Danh sách bài viết của tác giả</p>
                     <a href="/author/stored/news" class="btn btn-dark btn-sm">Xem danh sách</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Duyệt bảng điểm -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Bài viết</h5>
+                    <p class="text-muted mb-2">Danh sách bảng điểm chờ duyệt</p>
+                    <a href="/admin/achievements" class="btn btn-dark btn-sm">Xem danh sách</a>
                 </div>
             </div>
         </div>

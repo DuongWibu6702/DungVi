@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('./Users');
+const AchievementSchema = require('./Achievement');
 
 const Member = User.discriminator(
     'Member',
@@ -11,10 +12,13 @@ const Member = User.discriminator(
             trim: true,
             validate: {
                 validator: v =>
-                    /^(\+84|0)(3|5|7|8|9)\d{8}$/
-                        .test(v.replace(/[\s\-().]/g, '')),
+                    /^(\+84|0)(3|5|7|8|9)\d{8}$/.test(v.replace(/[\s\-().]/g, '')),
                 message: 'Số điện thoại không hợp lệ (VN)'
             }
+        },
+        achievements: {
+            type: [AchievementSchema],
+            default: []
         }
     })
 );

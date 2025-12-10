@@ -5,7 +5,11 @@ class MemberController {
 
     // [GET] /member/login
     loginForm(req, res) {
-        res.render('member/login', { error: null });
+        res.render('member/login', { 
+            error: null,
+            title: 'Đăng nhập tài khoản | DungVi',
+            metaDescription: 'Đăng nhập tài khoản thành viên để sử dụng các tính năng của DungVi.'
+        });
     }
 
     // [POST] /member/login
@@ -14,34 +18,69 @@ class MemberController {
             const { account, password } = req.body;
 
             if (!account || !password) {
-                return res.render('member/login', { error: 'Vui lòng nhập đầy đủ thông tin.' });
+                return res.render('member/login', { 
+                    error: 'Vui lòng nhập đầy đủ thông tin.',
+                    title: 'Đăng nhập tài khoản | DungVi',
+                    metaDescription: 'Đăng nhập tài khoản thành viên để sử dụng các tính năng của DungVi.'
+                });
             }
 
             const user = await MemberService.findByAccount(account);
-            if (!user || user.type !== "Member") {
-                return res.render('member/login', { error: 'Tài khoản không tồn tại.' });
+            if (!user) {
+                return res.render('member/login', { 
+                    error: 'Tài khoản không tồn tại.',
+                    title: 'Đăng nhập tài khoản | DungVi',
+                    metaDescription: 'Đăng nhập tài khoản thành viên để sử dụng các tính năng của DungVi.'
+                });
+            }
+
+            if (user.type === "Admin") {
+                return res.render('member/login', { 
+                    error: "Tài khoản không hợp lệ cho trang này.",
+                    title: 'Đăng nhập tài khoản | DungVi',
+                    metaDescription: 'Đăng nhập tài khoản thành viên để sử dụng các tính năng của DungVi.'
+                });
             }
 
             const match = await user.comparePassword(password);
             if (!match) {
-                return res.render('member/login', { error: 'Mật khẩu không đúng.' });
+                return res.render('member/login', { 
+                    error: 'Mật khẩu không đúng.',
+                    title: 'Đăng nhập tài khoản | DungVi',
+                    metaDescription: 'Đăng nhập tài khoản thành viên để sử dụng các tính năng của DungVi.'
+                });
             }
 
             req.session.user = {
                 _id: user._id.toString(),
                 name: user.name,
-                type: user.type
+                email: user.email,
+                type: user.type,
+                phone: user.phone
             };
 
-            res.redirect('/');
+            if (user.type === "Author") {
+                return res.redirect('/author/stored/news');
+            }
+
+            return res.redirect('/');
+
         } catch (error) {
-            res.render('member/login', { error: error.message || 'Đăng nhập thất bại.' });
+            return res.render('member/login', {
+                error: error.message || 'Đăng nhập thất bại.',
+                title: 'Đăng nhập tài khoản | DungVi',
+                metaDescription: 'Đăng nhập tài khoản thành viên để sử dụng các tính năng của DungVi.'
+            });
         }
     }
 
     // [GET] /member/register
     registerForm(req, res) {
-        res.render('member/register', { error: null });
+        res.render('member/register', { 
+            error: null,
+            title: 'Đăng ký tài khoản | DungVi',
+            metaDescription: 'Tạo tài khoản thành viên mới tại DungVi để nhận thông tin và cập nhật nhanh chóng.'
+        });
     }
 
     // [POST] /member/register
@@ -50,11 +89,19 @@ class MemberController {
             const { name, email, phone, password, confirmPassword } = req.body;
 
             if (!name || !email || !phone || !password || !confirmPassword) {
-                return res.render('member/register', { error: 'Vui lòng nhập đầy đủ thông tin.' });
+                return res.render('member/register', {
+                    error: 'Vui lòng nhập đầy đủ thông tin.',
+                    title: 'Đăng ký tài khoản | DungVi',
+                    metaDescription: 'Tạo tài khoản thành viên mới tại DungVi để nhận thông tin và cập nhật nhanh chóng.'
+                });
             }
 
             if (password !== confirmPassword) {
-                return res.render('member/register', { error: 'Mật khẩu nhập lại không khớp.' });
+                return res.render('member/register', {
+                    error: 'Mật khẩu nhập lại không khớp.',
+                    title: 'Đăng ký tài khoản | DungVi',
+                    metaDescription: 'Tạo tài khoản thành viên mới tại DungVi để nhận thông tin và cập nhật nhanh chóng.'
+                });
             }
 
             await MemberService.registerMember(
@@ -65,8 +112,13 @@ class MemberController {
             );
 
             res.redirect('/member/login');
+
         } catch (error) {
-            res.render('member/register', { error: error.msg || error.message || 'Lỗi hệ thống' });
+            res.render('member/register', {
+                error: error.msg || error.message || 'Lỗi hệ thống',
+                title: 'Đăng ký tài khoản | DungVi',
+                metaDescription: 'Tạo tài khoản thành viên mới tại DungVi để nhận thông tin và cập nhật nhanh chóng.'
+            });
         }
     }
 
@@ -74,10 +126,20 @@ class MemberController {
     async profile(req, res) {
         if (!req.session.user) return res.redirect('/member/login');
 
+        if (req.session.user.type === "Admin") {
+            return res.status(403).send("Không hợp lệ.");
+        }
+
         const doc = await MemberService.getById(req.session.user._id);
         const user = doc.toObject();
 
-        res.render('member/profile', { user, error: null, success: null });
+        res.render('member/profile', { 
+            user, 
+            error: null, 
+            success: null,
+            title: 'Thông tin cá nhân | DungVi',
+            metaDescription: 'Xem và cập nhật thông tin cá nhân tài khoản DungVi.'
+        });
     }
 
     // [POST] /member/profile
@@ -85,26 +147,34 @@ class MemberController {
         try {
             if (!req.session.user) return res.redirect('/member/login');
 
-            const userId = req.session.user._id;
+            if (req.session.user.type === "Admin") {
+                return res.status(403).send("Không hợp lệ.");
+            }
+
+            const id = req.session.user._id;
             const { name, phone, verifyPassword } = req.body;
 
-            const doc = await MemberService.getById(userId);
+            const doc = await MemberService.getById(id);
             const user = doc.toObject();
 
             if (!verifyPassword) {
                 return res.render('member/profile', {
                     user,
                     error: "Bạn cần xác nhận mật khẩu.",
-                    success: null
+                    success: null,
+                    title: 'Thông tin cá nhân | DungVi',
+                    metaDescription: 'Xem và cập nhật thông tin cá nhân tài khoản DungVi.'
                 });
             }
 
-            const match = await doc.comparePassword(verifyPassword);
-            if (!match) {
+            const ok = await doc.comparePassword(verifyPassword);
+            if (!ok) {
                 return res.render('member/profile', {
                     user,
                     error: "Mật khẩu xác nhận không đúng.",
-                    success: null
+                    success: null,
+                    title: 'Thông tin cá nhân | DungVi',
+                    metaDescription: 'Xem và cập nhật thông tin cá nhân tài khoản DungVi.'
                 });
             }
 
@@ -112,38 +182,26 @@ class MemberController {
                 return res.render('member/profile', {
                     user,
                     error: "Họ tên không được để trống.",
-                    success: null
+                    success: null,
+                    title: 'Thông tin cá nhân | DungVi',
+                    metaDescription: 'Xem và cập nhật thông tin cá nhân tài khoản DungVi.'
                 });
             }
 
-            let phoneClean = "";
-            if (phone && phone.trim() !== "") {
-                const normalized = phone.trim().replace(/[^\d+]/g, "");
-                const isValidVN = /^(\+84|0)(3|5|7|8|9)\d{8}$/.test(normalized);
-
-                if (!isValidVN) {
-                    return res.render('member/profile', {
-                        user,
-                        error: "Số điện thoại không hợp lệ.",
-                        success: null
-                    });
-                }
-
-                phoneClean = normalized;
-            }
-
-            await MemberService.updateProfile(userId, {
-                name: name.trim(),
-                phone: phoneClean
+            const updated = await MemberService.updateProfile(id, {
+                name,
+                phone
             });
 
-            const updatedDoc = await MemberService.getById(userId);
-            const updatedUser = updatedDoc.toObject();
+            req.session.user.name = updated.name;
+            req.session.user.phone = updated.phone ?? "";
 
             res.render('member/profile', {
-                user: updatedUser,
-                success: 'Cập nhật thành công.',
-                error: null
+                user: updated.toObject(),
+                success: "Cập nhật thành công.",
+                error: null,
+                title: 'Thông tin cá nhân | DungVi',
+                metaDescription: 'Xem và cập nhật thông tin cá nhân tài khoản DungVi.'
             });
 
         } catch (error) {
@@ -153,7 +211,9 @@ class MemberController {
             res.render('member/profile', {
                 user,
                 error: error.message || 'Lỗi hệ thống',
-                success: null
+                success: null,
+                title: 'Thông tin cá nhân | DungVi',
+                metaDescription: 'Xem và cập nhật thông tin cá nhân tài khoản DungVi.'
             });
         }
     }
@@ -162,62 +222,83 @@ class MemberController {
     async password(req, res) {
         if (!req.session.user) return res.redirect('/member/login');
 
-        const doc = await MemberService.getById(req.session.user._id);
-        const user = doc.toObject();
+        if (req.session.user.type === "Admin") {
+            return res.status(403).send("Không hợp lệ.");
+        }
 
-        res.render('member/password', { user, error: null, success: null });
+        const doc = await MemberService.getById(req.session.user._id);
+
+        res.render('member/password', {
+            user: doc.toObject(),
+            error: null,
+            success: null,
+            title: 'Đổi mật khẩu | DungVi',
+            metaDescription: 'Thay đổi mật khẩu tài khoản DungVi để bảo mật hơn.'
+        });
     }
 
     // [PATCH] /member/password
     async updatePassword(req, res) {
         try {
-            const userId = req.session.user?._id;
-            if (!userId) return res.redirect('/member/login');
+            const id = req.session.user?._id;
+            if (!id) return res.redirect('/member/login');
+
+            if (req.session.user.type === "Admin") {
+                return res.status(403).send("Không hợp lệ.");
+            }
 
             const { oldPassword, newPassword, confirmPassword } = req.body;
-            const doc = await User.findById(userId);
+            const doc = await User.findById(id);
 
             if (!oldPassword || !newPassword || !confirmPassword) {
                 return res.render('member/password', {
                     user: doc.toObject(),
-                    error: 'Vui lòng nhập đầy đủ thông tin.',
-                    success: null
+                    error: "Vui lòng nhập đầy đủ thông tin.",
+                    success: null,
+                    title: 'Đổi mật khẩu | DungVi',
+                    metaDescription: 'Thay đổi mật khẩu tài khoản DungVi để bảo mật hơn.'
                 });
             }
 
             if (newPassword !== confirmPassword) {
                 return res.render('member/password', {
                     user: doc.toObject(),
-                    error: 'Mật khẩu nhập lại không khớp.',
-                    success: null
+                    error: "Mật khẩu nhập lại không khớp.",
+                    success: null,
+                    title: 'Đổi mật khẩu | DungVi',
+                    metaDescription: 'Thay đổi mật khẩu tài khoản DungVi để bảo mật hơn.'
                 });
             }
 
-            const match = await doc.comparePassword(oldPassword);
-            if (!match) {
+            const ok = await doc.comparePassword(oldPassword);
+            if (!ok) {
                 return res.render('member/password', {
                     user: doc.toObject(),
-                    error: 'Mật khẩu hiện tại không đúng.',
-                    success: null
+                    error: "Mật khẩu hiện tại không đúng.",
+                    success: null,
+                    title: 'Đổi mật khẩu | DungVi',
+                    metaDescription: 'Thay đổi mật khẩu tài khoản DungVi để bảo mật hơn.'
                 });
             }
 
-            await MemberService.updatePassword(userId, newPassword);
+            await MemberService.updatePassword(id, newPassword);
 
             res.render('member/password', {
                 user: doc.toObject(),
-                success: 'Đổi mật khẩu thành công.',
-                error: null
+                success: "Đổi mật khẩu thành công.",
+                error: null,
+                title: 'Đổi mật khẩu | DungVi',
+                metaDescription: 'Thay đổi mật khẩu tài khoản DungVi để bảo mật hơn.'
             });
 
         } catch (error) {
             const doc = await MemberService.getById(req.session.user._id);
-            const user = doc.toObject();
-
             res.render('member/password', {
-                user,
-                error: error.message || 'Lỗi hệ thống',
-                success: null
+                user: doc.toObject(),
+                error: error.message || "Lỗi hệ thống",
+                success: null,
+                title: 'Đổi mật khẩu | DungVi',
+                metaDescription: 'Thay đổi mật khẩu tài khoản DungVi để bảo mật hơn.'
             });
         }
     }
@@ -225,8 +306,14 @@ class MemberController {
     // [POST] /member/verify-password
     async verifyPassword(req, res) {
         try {
-            if (!req.session.user) {
+            const sess = req.session.user;
+
+            if (!sess) {
                 return res.json({ success: false, message: "Bạn chưa đăng nhập." });
+            }
+
+            if (sess.type === "Admin") {
+                return res.json({ success: false, message: "Tài khoản không hợp lệ." });
             }
 
             const { password } = req.body;
@@ -234,13 +321,10 @@ class MemberController {
                 return res.json({ success: false, message: "Vui lòng nhập mật khẩu." });
             }
 
-            const doc = await User.findById(req.session.user._id);
-            if (!doc) {
-                return res.json({ success: false, message: "Không tìm thấy người dùng." });
-            }
+            const doc = await User.findById(sess._id);
+            const ok = await doc.comparePassword(password);
 
-            const match = await doc.comparePassword(password);
-            if (!match) {
+            if (!ok) {
                 return res.json({ success: false, message: "Mật khẩu không đúng." });
             }
 

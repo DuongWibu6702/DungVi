@@ -1,7 +1,5 @@
-// controllers/AdminController.js
 const AdminService = require('../services/AdminService');
 
-// [GET]/admin/:slug/login
 class AdminController {
 
     // [GET] /admin/:slug/login
@@ -95,6 +93,27 @@ class AdminController {
         try {
             await AdminService.deleteUser(req.params.id);
             res.redirect('/admin/users');
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
+    }
+    
+    // [PATCH] /admin/users/:id/change-type
+    async changeType(req, res) {
+        try {
+            const { newType } = req.body;
+
+            const updated = await AdminService.changeType(req.params.id, newType);
+
+            if (req.session.user?._id === updated._id.toString()) {
+                req.session.user.type = updated.type;
+                if (updated.active !== undefined) {
+                    req.session.user.active = updated.active;
+                }
+            }
+
+            res.redirect('/admin/users');
+
         } catch (err) {
             res.status(400).send(err.message);
         }

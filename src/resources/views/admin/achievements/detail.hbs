@@ -1,0 +1,42 @@
+<h2>Chi tiết lần nộp</h2>
+
+<h4>Thành viên: {{detail.member.name}}</h4>
+
+{{#eq detail.achievements.0.fileType "pdf"}}
+    <iframe src="{{detail.achievements.0.file}}" width="100%" height="600px"></iframe>
+{{else}}
+    <img src="{{detail.achievements.0.file}}" class="img-fluid mb-3">
+{{/eq}}
+
+<h4>Môn học</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Môn</th>
+            <th>Điểm</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each detail.achievements}}
+        <tr>
+            <td>{{subject}}</td>
+            <td>{{score}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<form method="POST" action="/admin/achievements/approve" class="d-inline">
+    <input type="hidden" name="id" value="{{detail.achievements.0.submissionId}}">
+    <button class="btn btn-success">Duyệt</button>
+</form>
+
+<form method="POST" action="/admin/achievements/reject" class="d-inline">
+    <input type="hidden" name="id" value="{{detail.achievements.0.submissionId}}">
+    <button class="btn btn-danger">Từ chối</button>
+</form>
+
+<form method="POST" action="/admin/achievements/request-edit" class="d-inline">
+    <input type="hidden" name="id" value="{{detail.achievements.0.submissionId}}">
+    <button class="btn btn-warning">Yêu cầu chỉnh sửa</button>
+</form>

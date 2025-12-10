@@ -3,8 +3,8 @@ const fsExtra = require('fs-extra');
 const path = require('path');
 const sharp = require('sharp');
 
-// Danh sách MIME được phép
-const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+const ALLOWED_IMAGES = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+const ALLOWED_PDF = ["application/pdf"];
 
 function uploadTmp(tmpFolder, maxWidth = 1200) {
     const safeTmp = path.basename(tmpFolder);
@@ -12,12 +12,12 @@ function uploadTmp(tmpFolder, maxWidth = 1200) {
 
     fsExtra.mkdirpSync(destPath);
 
-    // Dùng memoryStorage để tránh xung đột input/output
     const upload = multer({
         storage: multer.memoryStorage(),
         fileFilter: (req, file, cb) => {
-            if (!ALLOWED.includes(file.mimetype)) {
-                return cb(new Error("Chỉ hỗ trợ file ảnh"), false);
+            const { mimetype } = file;
+            if (![...ALLOWED_IMAGES, ...ALLOWED_PDF].includes(mimetype)) {
+                return cb(new Error("Chỉ hỗ trợ ảnh hoặc PDF"), false);
             }
             cb(null, true);
         }
@@ -25,32 +25,49 @@ function uploadTmp(tmpFolder, maxWidth = 1200) {
 
     return (req, res, next) => {
         upload(req, res, async (err) => {
-
             if (err) return next(err);
             if (!req.file) return next(new Error("Không có file upload"));
 
+            const fileMime = req.file.mimetype;
+
             try {
-                // Tạo tên file đích (luôn sinh file mới)
-                const filename = Date.now() + ".webp";
-                const outputPath = path.join(destPath, filename);
+                let filename;
+                let outputPath;
 
-                // Resize + convert sang WebP
-                await sharp(req.file.buffer)
-                    .resize({ width: maxWidth })
-                    .webp({ quality: 85 })
-                    .toFile(outputPath);
+                if (ALLOWED_PDF.includes(fileMime)) {
+                    filename = Date.now() + ".pdf";
+                    outputPath = path.join(destPath, filename);
 
-                // Ghi thông tin file mới vào req để Controller sử dụng
-                req.uploadedFile = {
-                    filename,
-                    url: `/uploads/tmp/${safeTmp}/${filename}`
-                };
+                    await fsExtra.writeFile(outputPath, req.file.buffer);
+
+                    req.uploadedFile = {
+                        filename,
+                        url: `/uploads/tmp/${safeTmp}/${filename}`,
+                        type: "pdf"
+                    };
+                }
+
+                else if (ALLOWED_IMAGES.includes(fileMime)) {
+                    filename = Date.now() + ".webp";
+                    outputPath = path.join(destPath, filename);
+
+                    await sharp(req.file.buffer)
+                        .resize({ width: maxWidth })
+                        .webp({ quality: 85 })
+                        .toFile(outputPath);
+
+                    req.uploadedFile = {
+                        filename,
+                        url: `/uploads/tmp/${safeTmp}/${filename}`,
+                        type: "image"
+                    };
+                }
 
                 return next();
 
             } catch (e) {
                 console.error(e);
-                return next(new Error("Xử lý ảnh thất bại"));
+                return next(new Error("Xử lý file thất bại"));
             }
         });
     };

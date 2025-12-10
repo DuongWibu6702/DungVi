@@ -31,7 +31,7 @@
 
     </form>
 
-    <!-- BẢNG USER -->
+    <!-- Bảng user -->
     <table class="table table-hover table-bordered align-middle">
         <thead class="table-dark text-center">
             <tr>
@@ -39,7 +39,7 @@
                 <th>Họ tên</th>
                 <th>Email</th>
                 <th>Vai trò</th>
-                <th style="width: 220px;">Hành động</th>
+                <th style="width: 260px;">Hành động</th>
             </tr>
         </thead>
 
@@ -47,12 +47,10 @@
         {{#each users}}
             <tr>
                 <td class="text-center">{{inc @index}}</td>
-
                 <td>{{this.name}}</td>
                 <td>{{this.email}}</td>
 
                 <td class="text-center">
-
                     <span class="badge text-bg-primary text-uppercase px-3 py-2">
                         {{this.type}}
                     </span>
@@ -64,43 +62,56 @@
                             <span class="badge bg-danger ms-2 px-3 py-2">INACTIVE</span>
                         {{/if}}
                     {{/if}}
-
                 </td>
 
                 <td class="text-center">
 
-                    {{!-- Nút Active / Inactive cho Author --}}
-                    {{#if (eq this.type "Author")}}
-
-                        <form method="POST"
-                            action="/admin/users/{{this._id}}/toggle-active?_method=PATCH"
-                            class="d-inline">
-
-                            {{#if this.active}}
-                                <button class="btn btn-warning btn-sm">
-                                    Deactive
-                                </button>
-                            {{else}}
-                                <button class="btn btn-success btn-sm">
-                                    Active
-                                </button>
-                            {{/if}}
-
-                        </form>
-
-                    {{/if}}
-
-                    {{!-- Nút Xóa (trừ Admin) --}}
+                    {{!-- Chuyển loại Member <-> Author --}}
                     {{#unless (eq this.type "Admin")}}
                         <form method="POST"
-                            action="/admin/users/{{this._id}}/delete?_method=DELETE"
-                            class="d-inline"
-                            onsubmit="return confirm('Bạn chắc muốn xóa người dùng này?');">
+                            action="/admin/users/{{this._id}}/change-type?_method=PATCH"
+                            class="d-inline-block me-1">
 
-                            <button class="btn btn-danger btn-sm ms-1">
-                                Xóa
-                            </button>
+                            <select name="newType"
+                                    class="form-select form-select-sm d-inline-block"
+                                    style="width: 135px; display:inline-block;">
+                                <option value="Member" {{#if (eq this.type "Member")}}selected{{/if}}>Member</option>
+                                <option value="Author" {{#if (eq this.type "Author")}}selected{{/if}}>Author</option>
+                            </select>
+
+                            <button class="btn btn-primary btn-sm mt-1">Chuyển</button>
                         </form>
+                    {{/unless}}
+
+                    {{!-- Active / Inactive --}}
+                    {{#if (eq this.type "Author")}}
+                        <form method="POST"
+                              action="/admin/users/{{this._id}}/toggle-active?_method=PATCH"
+                              class="d-inline">
+                            {{#if this.active}}
+                                <button class="btn btn-warning btn-sm">Deactivate</button>
+                            {{else}}
+                                <button class="btn btn-success btn-sm">Activate</button>
+                            {{/if}}
+                        </form>
+                    {{/if}}
+
+                    {{!-- XÓA BẰNG MODAL --}}
+                    {{#unless (eq this.type "Admin")}}
+                        <button type="button"
+                                class="btn btn-danger btn-sm ms-1 btn-delete"
+                                data-id="{{this._id}}"
+                                data-name="{{this.name}}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteUserModal">
+                            Xóa
+                        </button>
+
+                        <!-- Form delete ẩn -->
+                        <form id="deleteForm_{{this._id}}"
+                              method="POST"
+                              action="/admin/users/{{this._id}}/delete?_method=DELETE"
+                              class="d-none"></form>
                     {{/unless}}
 
                 </td>
@@ -109,29 +120,34 @@
         </tbody>
     </table>
 
-    <!-- PHÂN TRANG -->
-    {{#if pagination.totalPages}}
-    <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center">
-
-            <li class="page-item {{#if pagination.isFirst}}disabled{{/if}}">
-                <a class="page-link" href="?page={{pagination.prev}}{{queryString query}}">«</a>
-            </li>
-
-            {{#each pagination.pages}}
-            <li class="page-item {{#if this.active}}active{{/if}}">
-                <a class="page-link" href="?page={{this.number}}{{queryString ../query}}">
-                    {{this.number}}
-                </a>
-            </li>
-            {{/each}}
-
-            <li class="page-item {{#if pagination.isLast}}disabled{{/if}}">
-                <a class="page-link" href="?page={{pagination.next}}{{queryString query}}">»</a>
-            </li>
-
-        </ul>
-    </nav>
-    {{/if}}
-
 </div>
+
+
+<!-- MODAL XÓA USER -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Xác nhận xóa người dùng</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p>Bạn có chắc muốn xóa người dùng:</p>
+        <h5 id="deleteUserName" class="fw-bold text-danger"></h5>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+            Xóa
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/admin/users.js"></script>

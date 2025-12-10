@@ -5,81 +5,7 @@ const Newdb = require('../models/News');
 const fsExtra = require('fs-extra');
 const path = require('path');
 
-function normalizeEmail(email) {
-    return String(email || "").trim().toLowerCase();
-}
-
 class AuthorService {
-
-    async registerAuthor(name, email, password) {
-        const normEmail = normalizeEmail(email);
-        const exists = await User.findOne({ email: normEmail });
-        if (exists) throw new Error("Email đã tồn tại.");
-
-        const author = new Author({
-            name,
-            email: normEmail,
-            password,
-            active: false
-        });
-
-        await author.save();
-        return author;
-    }
-
-    async loginAuthor(email, password) {
-        const norm = normalizeEmail(email);
-        const author = await Author.findOne({ email: norm });
-
-        if (!author) throw new Error("Email không tồn tại.");
-        if (!author.active) throw new Error("Tài khoản chưa được Admin duyệt.");
-
-        const match = await author.comparePassword(password);
-        if (!match) throw new Error("Mật khẩu không đúng.");
-
-        return author;
-    }
-
-    async getById(id) {
-        return User.findById(id).lean();
-    }
-
-    async updateProfile(id, name, email, verifyPassword) {
-        const user = await User.findById(id);
-        if (!user) throw new Error("Không tìm thấy tài khoản.");
-
-        const match = await user.comparePassword(verifyPassword);
-        if (!match) throw new Error("Mật khẩu xác nhận không đúng.");
-
-        const normEmail = normalizeEmail(email);
-        const exists = await User.findOne({ email: normEmail, _id: { $ne: id } });
-        if (exists) throw new Error("Email đã tồn tại.");
-
-        user.name = name.trim();
-        user.email = normEmail;
-
-        await user.save();
-        return user.toObject();
-    }
-
-    async updatePassword(id, oldPassword, newPassword, confirmPassword) {
-        if (newPassword !== confirmPassword) {
-            throw new Error("Mật khẩu nhập lại không trùng khớp.");
-        }
-
-        const user = await User.findById(id);
-        if (!user) throw new Error("Không tìm thấy tài khoản.");
-
-        const match = await user.comparePassword(oldPassword);
-        if (!match) throw new Error("Mật khẩu hiện tại không đúng.");
-
-        const hashed = await bcrypt.hash(newPassword, 10);
-        user.password = hashed;
-
-        await user.save();
-        return { message: "Đổi mật khẩu thành công." };
-    }
-
     getStoredNews() {
         return Promise.all([
             Newdb.find({}),
@@ -98,6 +24,8 @@ class AuthorService {
             body: formData.body,
             author: formData.author,
             source: formData.source || "",
+            seoTitle: formData.seoTitle,
+            seoDescription: formData.seoDescription,
             images: []
         });
 
@@ -175,6 +103,8 @@ class AuthorService {
         if (formData.body) newdb.body = formData.body;
         if (formData.author) newdb.author = formData.author;
         if (formData.source) newdb.source = formData.source;
+        if (formData.seoTitle) newdb.seoTitle = formData.seoTitle;
+        if (formData.seoDescription) newdb.seoDescription = formData.seoDescription;
 
         return newdb.save();
     }
@@ -190,6 +120,8 @@ class AuthorService {
             body: original.body,
             author: original.author,
             source: original.source,
+            seoTitle: original.seoTitle + " (Clone)",
+            seoDescription: original.seoDescription,
             images: [...(original.images || [])]
         });
 

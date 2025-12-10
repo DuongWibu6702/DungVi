@@ -22,9 +22,9 @@ class MemberService {
         });
 
         if (exists) {
-            const error = new Error('Email hoặc số điện thoại đã tồn tại.');
-            error.msg = 'Email hoặc số điện thoại đã tồn tại.';
-            throw error;
+            const err = new Error('Email hoặc số điện thoại đã tồn tại.');
+            err.msg = err.message;
+            throw err;
         }
 
         const member = new Member({
@@ -39,23 +39,26 @@ class MemberService {
     }
 
     async getById(userId) {
-        return await User.findById(userId); // document, không lean()
+        return await User.findById(userId);
     }
 
     async updateProfile(userId, data) {
         const { name, phone } = data;
-        const phoneClean = cleanPhone(phone);
 
-        if (phoneClean) {
+        let phoneClean = "";
+
+        if (phone && phone.trim() !== "") {
+            phoneClean = cleanPhone(phone);
+
             const conflict = await User.findOne({
                 _id: { $ne: userId },
                 phone: phoneClean
             });
 
             if (conflict) {
-                const error = new Error('Số điện thoại đã tồn tại.');
-                error.msg = 'Số điện thoại đã tồn tại.';
-                throw error;
+                const err = new Error("Số điện thoại đã tồn tại.");
+                err.msg = err.message;
+                throw err;
             }
         }
 
@@ -71,7 +74,6 @@ class MemberService {
 
     async updatePassword(userId, newPassword) {
         const hashed = await bcrypt.hash(newPassword, 10);
-
         return await User.findByIdAndUpdate(
             userId,
             { password: hashed },
@@ -83,12 +85,13 @@ class MemberService {
         if (!account || typeof account !== 'string') return null;
 
         const acct = account.trim();
+        const isEmail = /^\S+@\S+\.\S+$/.test(acct);
 
-        if (/^\S+@\S+\.\S+$/.test(acct)) {
-            return await Member.findOne({ email: normalizeEmail(acct) });
+        if (isEmail) {
+            return await User.findOne({ email: normalizeEmail(acct) });
         }
 
-        return await Member.findOne({ phone: cleanPhone(acct) });
+        return await User.findOne({ phone: cleanPhone(acct) });
     }
 }
 

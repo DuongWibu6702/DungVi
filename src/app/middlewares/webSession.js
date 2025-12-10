@@ -8,7 +8,7 @@ module.exports = {
 
     requireAdmin(req, res, next) {
         const user = req.session?.user;
-        if (!user) return res.redirect('/member/login');
+        if (!user) return res.redirect('/');
 
         const allowed = ["Admin"];
         if (allowed.includes(user.type)) return next();
@@ -18,7 +18,7 @@ module.exports = {
 
     requireAuthor(req, res, next) {
         const user = req.session?.user;
-        if (!user) return res.redirect('/member/login');
+        if (!user) return res.redirect('/');
 
         const allowed = ["Admin", "Author"];
         if (allowed.includes(user.type)) return next();
